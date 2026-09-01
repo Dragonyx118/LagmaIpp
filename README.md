@@ -11,7 +11,3 @@
 App companion per il robot [LagmaBills](https://github.com/Dragonyx118/LagmaBills), sviluppata in **.NET MAUI** per Windows e Android.
 
 ---
-
-PalleBus ha vinto  
-Andrei unenployed  
-Panelli gay
