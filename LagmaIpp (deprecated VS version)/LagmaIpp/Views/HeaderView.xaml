@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LagmaIpp.Views.HeaderView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:LagmaIpp.ViewModels"
+    x:Name="this">
+
+    <Grid
+        HeightRequest="72"
+        BackgroundColor="#0D47A1">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Logo -->
+        <Image
+            Grid.Column="0"
+            Source="logo.png"
+            HeightRequest="52"
+            WidthRequest="52"
+            Margin="12,0,0,0"
+            VerticalOptions="Center"/>
+
+        <!-- Stato MQTT + WiFi -->
+        <StackLayout
+            Grid.Column="1"
+            Orientation="Horizontal"
+            VerticalOptions="Center"
+            Margin="10,0,0,0"
+            Spacing="6">
+
+            <Image
+                Source="wifi_check.png"
+                HeightRequest="20"
+                WidthRequest="20"
+                VerticalOptions="Center"/>
+
+            <Label
+                Text="{Binding MqttConnected,
+                    Converter={StaticResource BoolToStringConverter},
+                    ConverterParameter='CONNESSO|DISCONNESSO'}"
+                TextColor="{Binding MqttConnected,
+                    Converter={StaticResource BoolToColorConverter},
+                    ConverterParameter='#00C853|#FF1744'}"
+                FontSize="13"
+                FontAttributes="Bold"
+                VerticalOptions="Center"/>
+
+        </StackLayout>
+
+        <!-- Batteria -->
+        <Image
+            Grid.Column="2"
+            Source="battery_full.png"
+            HeightRequest="24"
+            WidthRequest="24"
+            Margin="0,0,12,0"
+            VerticalOptions="Center"/>
+
+    </Grid>
+
+</ContentView>

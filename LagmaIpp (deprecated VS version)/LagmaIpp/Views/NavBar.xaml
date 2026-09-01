@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LagmaIpp.Views.NavBar"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Bottom navbar (mobile) — viene nascosta su desktop dal code-behind -->
+    <Border
+        x:Name="BottomNav"
+        BackgroundColor="#080B10"
+        Stroke="#1E2A38"
+        StrokeThickness="0"
+        Padding="0">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="0"/>
+        </Border.StrokeShape>
+
+        <!-- Linea superiore ciano sottilissima -->
+        <Grid RowDefinitions="1,Auto">
+
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="#00D4FF"
+                Opacity="0.3"
+                HeightRequest="1"/>
+
+            <!--
+                Layout a 7 colonne:
+                col 0-2 = tab sx  |  col 3 = logo centrale  |  col 4-6 = tab dx
+            -->
+            <Grid
+                Grid.Row="1"
+                ColumnDefinitions="*,*,*,Auto,*,*,*"
+                Padding="0,6,0,8">
+
+                <!-- Robot -->
+                <StackLayout
+                    Grid.Column="0"
+                    x:Name="TabRobot"
+                    Spacing="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabRobotTapped"/>
+                    </StackLayout.GestureRecognizers>
+                    <Image
+                        x:Name="IconRobot"
+                        Source="robot.png"
+                        HeightRequest="22" WidthRequest="22"
+                        HorizontalOptions="Center"
+                        Opacity="0.4"/>
+                    <Label
+                        x:Name="LblRobot"
+                        Text="ROBOT"
+                        FontSize="9"
+                        FontAttributes="Bold"
+                        CharacterSpacing="1"
+                        HorizontalOptions="Center"
+                        TextColor="#3D5068"/>
+                </StackLayout>
+
+                <!-- Braccio -->
+                <StackLayout
+                    Grid.Column="1"
+                    x:Name="TabBraccio"
+                    Spacing="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabBraccioTapped"/>
+                    </StackLayout.GestureRecognizers>
+                    <Image
+                        x:Name="IconBraccio"
+                        Source="robot_industrial.png"
+                        HeightRequest="22" WidthRequest="22"
+                        HorizontalOptions="Center"
+                        Opacity="0.4"/>
+                    <Label
+                        x:Name="LblBraccio"
+                        Text="ARM"
+                        FontSize="9"
+                        FontAttributes="Bold"
+                        CharacterSpacing="1"
+                        HorizontalOptions="Center"
+                        TextColor="#3D5068"/>
+                </StackLayout>
+
+                <!-- Drone -->
+                <StackLayout
+                    Grid.Column="2"
+                    x:Name="TabDrone"
+                    Spacing="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabDroneTapped"/>
+                    </StackLayout.GestureRecognizers>
+                    <Image
+                        x:Name="IconDrone"
+                        Source="drone.png"
+                        HeightRequest="22" WidthRequest="22"
+                        HorizontalOptions="Center"
+                        Opacity="0.4"/>
+                    <Label
+                        x:Name="LblDrone"
+                        Text="DRONE"
+                        FontSize="9"
+                        FontAttributes="Bold"
+                        CharacterSpacing="1"
+                        HorizontalOptions="Center"
+                        TextColor="#3D5068"/>
+                </StackLayout>
+
+                <!-- ═══ LOGO CENTRALE CHE SPUNTA ═══ -->
+                <Grid
+                    Grid.Column="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End"
+                    WidthRequest="64"
+                    HeightRequest="56"
+                    Margin="4,0">
+
+                    <!-- Sfondo circolare glowing -->
+                    <Ellipse
+                        Fill="#080B10"
+                        Stroke="#00D4FF"
+                        StrokeThickness="1.5"
+                        WidthRequest="56" HeightRequest="56"
+                        HorizontalOptions="Center"
+                        VerticalOptions="End"
+                        Opacity="0.85"/>
+
+                    <!-- Logo immagine — spunta di ~12px sopra la navbar -->
+                    <Image
+                        Source="lagma_logo.png"
+                        WidthRequest="48"
+                        HeightRequest="48"
+                        HorizontalOptions="Center"
+                        VerticalOptions="End"
+                        Margin="0,0,0,-6"
+                        Aspect="AspectFit"/>
+
+                </Grid>
+
+                <!-- Mappa -->
+                <StackLayout
+                    Grid.Column="4"
+                    x:Name="TabMappa"
+                    Spacing="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabMappaTapped"/>
+                    </StackLayout.GestureRecognizers>
+                    <Image
+                        x:Name="IconMappa"
+                        Source="wifi_check.png"
+                        HeightRequest="22" WidthRequest="22"
+                        HorizontalOptions="Center"
+                        Opacity="0.4"/>
+                    <Label
+                        x:Name="LblMappa"
+                        Text="MAP"
+                        FontSize="9"
+                        FontAttributes="Bold"
+                        CharacterSpacing="1"
+                        HorizontalOptions="Center"
+                        TextColor="#3D5068"/>
+                </StackLayout>
+
+                <!-- Musica -->
+                <StackLayout
+                    Grid.Column="5"
+                    x:Name="TabMusica"
+                    Spacing="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabMusicaTapped"/>
+                    </StackLayout.GestureRecognizers>
+                    <Image
+                        x:Name="IconMusica"
+                        Source="music.png"
+                        HeightRequest="22" WidthRequest="22"
+                        HorizontalOptions="Center"
+                        Opacity="0.4"/>
+                    <Label
+                        x:Name="LblMusica"
+                        Text="MEDIA"
+                        FontSize="9"
+                        FontAttributes="Bold"
+                        CharacterSpacing="1"
+                        HorizontalOptions="Center"
+                        TextColor="#3D5068"/>
+                </StackLayout>
+
+                <!-- MQTT -->
+                <StackLayout
+                    Grid.Column="6"
+                    x:Name="TabMqtt"
+                    Spacing="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabMqttTapped"/>
+                    </StackLayout.GestureRecognizers>
+                    <Image
+                        x:Name="IconMqtt"
+                        Source="wifi_check.png"
+                        HeightRequest="22" WidthRequest="22"
+                        HorizontalOptions="Center"
+                        Opacity="0.4"/>
+                    <Label
+                        x:Name="LblMqtt"
+                        Text="MQTT"
+                        FontSize="9"
+                        FontAttributes="Bold"
+                        CharacterSpacing="1"
+                        HorizontalOptions="Center"
+                        TextColor="#3D5068"/>
+                </StackLayout>
+
+            </Grid>
+        </Grid>
+    </Border>
+
+</ContentView>

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LagmaIpp.Views.DashboardShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:LagmaIpp.Views"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{StaticResource BgPage}">
+
+    <!-- Layout root: sidebar sx + content area -->
+    <Grid ColumnDefinitions="220,*" x:Name="RootGrid">
+
+        <!-- ══════════════════════════════════════════
+             SIDEBAR SINISTRA
+        ══════════════════════════════════════════ -->
+        <Grid
+            x:Name="Sidebar"
+            Grid.Column="0"
+            BackgroundColor="{StaticResource BgNav}"
+            RowDefinitions="Auto,*,Auto">
+
+            <!-- Logo + app name -->
+            <Grid Grid.Row="0" Padding="20,28,16,20">
+                <Grid ColumnDefinitions="40,*">
+                    <Border
+                        Grid.Column="0"
+                        BackgroundColor="#0078D4"
+                        StrokeThickness="0"
+                        WidthRequest="40" HeightRequest="40">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10"/>
+                        </Border.StrokeShape>
+                        <Label
+                            Text="L"
+                            TextColor="White"
+                            FontSize="20"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"/>
+                    </Border>
+                    <StackLayout Grid.Column="1" Margin="10,0,0,0" VerticalOptions="Center" Spacing="1">
+                        <Label Text="Lagma" TextColor="White" FontSize="15" FontAttributes="Bold"/>
+                        <Label Text="Robot Control" TextColor="{StaticResource NavTextDim}" FontSize="10"/>
+                    </StackLayout>
+                </Grid>
+            </Grid>
+
+            <!-- Nav items -->
+            <ScrollView Grid.Row="1">
+                <StackLayout Padding="10,0" Spacing="2">
+
+                    <!-- Section label -->
+                    <Label Text="NAVIGATION" TextColor="{StaticResource NavTextDim}"
+                        FontSize="9" FontAttributes="Bold" CharacterSpacing="2"
+                        Margin="10,8,0,6"/>
+
+                    <!-- Robot -->
+                    <Border x:Name="NavRobot" Style="{StaticResource NavItem}" BackgroundColor="#0078D4">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNavRobotTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="24,*,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="🤖" FontSize="16" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="Robot" TextColor="White"
+                                FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" WidthRequest="3" HeightRequest="20"
+                                BackgroundColor="White" CornerRadius="2" VerticalOptions="Center"
+                                x:Name="IndRobot"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Braccio -->
+                    <Border x:Name="NavBraccio" Style="{StaticResource NavItem}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNavBraccioTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="24,*,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="🦾" FontSize="16" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="Braccio" TextColor="{StaticResource NavTextDim}"
+                                FontSize="14" VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" WidthRequest="3" HeightRequest="20"
+                                BackgroundColor="Transparent" CornerRadius="2" VerticalOptions="Center"
+                                x:Name="IndBraccio"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Drone -->
+                    <Border x:Name="NavDrone" Style="{StaticResource NavItem}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNavDroneTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="24,*,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="🚁" FontSize="16" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="Drone" TextColor="{StaticResource NavTextDim}"
+                                FontSize="14" VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" WidthRequest="3" HeightRequest="20"
+                                BackgroundColor="Transparent" CornerRadius="2" VerticalOptions="Center"
+                                x:Name="IndDrone"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Mappa -->
+                    <Border x:Name="NavMappa" Style="{StaticResource NavItem}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNavMappaTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="24,*,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="🗺️" FontSize="16" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="Mappa" TextColor="{StaticResource NavTextDim}"
+                                FontSize="14" VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" WidthRequest="3" HeightRequest="20"
+                                BackgroundColor="Transparent" CornerRadius="2" VerticalOptions="Center"
+                                x:Name="IndMappa"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Musica -->
+                    <Border x:Name="NavMusica" Style="{StaticResource NavItem}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNavMusicaTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="24,*,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="🎵" FontSize="16" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="Media" TextColor="{StaticResource NavTextDim}"
+                                FontSize="14" VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" WidthRequest="3" HeightRequest="20"
+                                BackgroundColor="Transparent" CornerRadius="2" VerticalOptions="Center"
+                                x:Name="IndMusica"/>
+                        </Grid>
+                    </Border>
+
+                    <Label Text="SYSTEM" TextColor="{StaticResource NavTextDim}"
+                        FontSize="9" FontAttributes="Bold" CharacterSpacing="2"
+                        Margin="10,16,0,6"/>
+
+                    <!-- MQTT -->
+                    <Border x:Name="NavMqtt" Style="{StaticResource NavItem}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNavMqttTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="24,*,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0" Text="📡" FontSize="16" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="MQTT" TextColor="{StaticResource NavTextDim}"
+                                FontSize="14" VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" WidthRequest="3" HeightRequest="20"
+                                BackgroundColor="Transparent" CornerRadius="2" VerticalOptions="Center"
+                                x:Name="IndMqtt"/>
+                        </Grid>
+                    </Border>
+
+                </StackLayout>
+            </ScrollView>
+
+            <!-- Status area bottom -->
+            <Border
+                Grid.Row="2"
+                Margin="10,0,10,16"
+                BackgroundColor="#243660"
+                StrokeThickness="0"
+                Padding="12,10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                    <!-- MQTT status -->
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+                        <BoxView Grid.Column="0" Style="{StaticResource StatusDot}"
+                            x:Name="SidebarMqttDot" Color="{StaticResource AccentRed}"/>
+                        <Label Grid.Column="1" Text="MQTT" TextColor="{StaticResource NavTextDim}"
+                            FontSize="11" Margin="6,0,0,0" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" x:Name="SidebarMqttLabel" Text="OFF"
+                            TextColor="{StaticResource AccentRed}" FontSize="11"
+                            FontAttributes="Bold" VerticalOptions="Center"/>
+                    </Grid>
+                    <!-- Pi status -->
+                    <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
+                        <BoxView Grid.Column="0" Style="{StaticResource StatusDot}"
+                            x:Name="SidebarPiDot" Color="#5A6E8A"/>
+                        <Label Grid.Column="1" Text="Pi 4" TextColor="{StaticResource NavTextDim}"
+                            FontSize="11" Margin="6,0,0,0" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" x:Name="SidebarPiLabel" Text="---"
+                            TextColor="{StaticResource NavTextDim}" FontSize="11"
+                            VerticalOptions="Center"/>
+                    </Grid>
+                    <!-- CPU temp -->
+                    <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto">
+                        <Label Grid.Column="0" Text="🌡" FontSize="11" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="CPU Temp" TextColor="{StaticResource NavTextDim}"
+                            FontSize="11" Margin="4,0,0,0" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" x:Name="SidebarTempLabel" Text="---"
+                            TextColor="{StaticResource NavTextDim}" FontSize="11"
+                            VerticalOptions="Center"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+        </Grid>
+
+        <!-- ══════════════════════════════════════════
+             CONTENT AREA
+        ══════════════════════════════════════════ -->
+        <Grid Grid.Column="1" RowDefinitions="64,*">
+
+            <!-- TOP HEADER BAR -->
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="*,Auto,Auto,Auto"
+                BackgroundColor="{StaticResource BgCard}"
+                Padding="20,0,20,0">
+
+                <!-- Page title -->
+                <Label Grid.Column="0"
+                    x:Name="PageTitleLabel"
+                    Text="Robot Control"
+                    Style="{StaticResource LabelPageTitle}"
+                    VerticalOptions="Center"/>
+
+                <!-- Rx/Tx counter -->
+                <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="4"
+                    VerticalOptions="Center" Margin="0,0,16,0">
+                    <Label Text="RX" TextColor="{StaticResource AccentGreen}"
+                        FontSize="10" FontAttributes="Bold" VerticalOptions="Center"/>
+                    <Label x:Name="HeaderRx" Text="0"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontSize="12" VerticalOptions="Center"/>
+                    <Label Text="TX" TextColor="{StaticResource AccentBlue}"
+                        FontSize="10" FontAttributes="Bold" VerticalOptions="Center" Margin="8,0,0,0"/>
+                    <Label x:Name="HeaderTx" Text="0"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontSize="12" VerticalOptions="Center"/>
+                </StackLayout>
+
+                <!-- MQTT chip -->
+                <Border Grid.Column="2"
+                    BackgroundColor="{StaticResource AccentBlueLight}"
+                    StrokeThickness="0"
+                    Padding="10,4"
+                    VerticalOptions="Center"
+                    Margin="0,0,12,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20"/>
+                    </Border.StrokeShape>
+                    <StackLayout Orientation="Horizontal" Spacing="6">
+                        <BoxView Style="{StaticResource StatusDot}"
+                            x:Name="HeaderMqttDot" Color="{StaticResource AccentRed}"/>
+                        <Label x:Name="HeaderMqttLabel" Text="DISCONNESSO"
+                            TextColor="{StaticResource AccentRed}"
+                            FontSize="11" FontAttributes="Bold"
+                            VerticalOptions="Center"/>
+                    </StackLayout>
+                </Border>
+
+                <!-- Battery indicator -->
+                <StackLayout Grid.Column="3" Orientation="Horizontal" Spacing="4"
+                    VerticalOptions="Center">
+                    <Label Text="🔋" FontSize="16" VerticalOptions="Center"/>
+                    <Label x:Name="HeaderBatteryLabel" Text="---"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontSize="12" VerticalOptions="Center"/>
+                </StackLayout>
+
+            </Grid>
+
+            <!-- PAGE CONTENT — swapped by code-behind -->
+            <ContentView Grid.Row="1" x:Name="PageContent" BackgroundColor="{StaticResource BgPage}"/>
+
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

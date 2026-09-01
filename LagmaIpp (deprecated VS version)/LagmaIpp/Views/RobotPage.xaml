@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LagmaIpp.Views.RobotPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:LagmaIpp.Views"
+    BackgroundColor="{StaticResource BgPage}"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Layout principale: top bar + contenuto + gamepad bar -->
+    <Grid RowDefinitions="Auto,*,Auto" Padding="16,12,16,12" RowSpacing="10">
+
+        <!-- ══ TOP STATUS BAR ══ -->
+        <Border Grid.Row="0" Style="{StaticResource Card}" Padding="14,8">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="16">
+
+                <Border Grid.Column="0"
+                    BackgroundColor="{StaticResource AccentBlueLight}"
+                    Stroke="{StaticResource AccentBlue}" StrokeThickness="1" Padding="10,4">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="6"/>
+                    </Border.StrokeShape>
+                    <StackLayout Orientation="Horizontal" Spacing="6">
+                        <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4"
+                            BackgroundColor="{StaticResource AccentBlue}" VerticalOptions="Center"/>
+                        <Label Text="{Binding StatoMotoriLabel}"
+                            TextColor="{StaticResource AccentBlue}"
+                            FontSize="12" FontAttributes="Bold" VerticalOptions="Center"/>
+                    </StackLayout>
+                </Border>
+
+                <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalOptions="Center">
+                    <BoxView Style="{StaticResource StatusDot}"
+                        Color="{Binding MotoriOnline, Converter={StaticResource BoolToStatusColorConverter}}"/>
+                    <StackLayout Spacing="0">
+                        <Label Text="ESP32 MOTORI" Style="{StaticResource LabelSection}"/>
+                        <Label Text="{Binding MotoriIp}" TextColor="{StaticResource TextSecondary}" FontSize="11"/>
+                    </StackLayout>
+                </StackLayout>
+
+                <StackLayout Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalOptions="Center">
+                    <BoxView Style="{StaticResource StatusDot}"
+                        Color="{Binding SensoriOnline, Converter={StaticResource BoolToStatusColorConverter}}"/>
+                    <StackLayout Spacing="0">
+                        <Label Text="ESP32 SENSORI" Style="{StaticResource LabelSection}"/>
+                        <Label Text="{Binding SensoriIp}" TextColor="{StaticResource TextSecondary}" FontSize="11"/>
+                    </StackLayout>
+                </StackLayout>
+
+                <BoxView Grid.Column="3" Color="Transparent"/>
+
+                <StackLayout Grid.Column="4" Orientation="Horizontal" Spacing="6" VerticalOptions="Center">
+                    <Label Text="VEL" Style="{StaticResource LabelSection}" VerticalOptions="Center"/>
+                    <Label Text="{Binding VelocitaGlobale}" Style="{StaticResource LabelValue}"
+                        FontSize="14" VerticalOptions="Center"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="5" Orientation="Horizontal" Spacing="6" VerticalOptions="Center">
+                    <Label Text="🌡" FontSize="14" VerticalOptions="Center"/>
+                    <StackLayout Spacing="0">
+                        <Label Text="CPU" Style="{StaticResource LabelSection}"/>
+                        <Label Text="{Binding PiTempStr}" TextColor="{StaticResource AccentBlue}"
+                            FontSize="12" FontAttributes="Bold"/>
+                    </StackLayout>
+                </StackLayout>
+
+                <StackLayout Grid.Column="6" Orientation="Horizontal" Spacing="6" VerticalOptions="Center">
+                    <Label Text="💾" FontSize="14" VerticalOptions="Center"/>
+                    <StackLayout Spacing="0">
+                        <Label Text="RAM" Style="{StaticResource LabelSection}"/>
+                        <Label Text="{Binding PiRamStr}" TextColor="{StaticResource TextSecondary}" FontSize="12"/>
+                    </StackLayout>
+                </StackLayout>
+
+            </Grid>
+        </Border>
+
+        <!-- ══ CONTENUTO PRINCIPALE: due colonne proporzionali ══ -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10">
+
+            <!-- ════ COLONNA SINISTRA: video + sensori ════ -->
+            <Grid Grid.Column="0" RowDefinitions="*,Auto" RowSpacing="10">
+
+                <!-- Video feed -->
+                <Border Grid.Row="0" Style="{StaticResource Card}" Padding="0">
+                    <Grid RowDefinitions="Auto,*,Auto">
+
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Padding="14,10" ColumnSpacing="12">
+                            <StackLayout Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                                <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4"
+                                    BackgroundColor="{StaticResource AccentRed}" VerticalOptions="Center"/>
+                                <Label Text="LIVE FEED" Style="{StaticResource LabelSection}" VerticalOptions="Center"/>
+                            </StackLayout>
+                            <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                                <StackLayout Orientation="Horizontal" Spacing="4">
+                                    <Label Text="IMU θ" TextColor="{StaticResource TextDim}" FontSize="11" VerticalOptions="Center"/>
+                                    <Label Text="{Binding GyrZ, StringFormat='{0:F1}°'}"
+                                        TextColor="{StaticResource AccentBlue}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </StackLayout>
+                                <StackLayout Orientation="Horizontal" Spacing="4">
+                                    <Label Text="VEL" TextColor="{StaticResource TextDim}" FontSize="11" VerticalOptions="Center"/>
+                                    <Label Text="{Binding VelocitaGlobale}"
+                                        TextColor="{StaticResource AccentBlue}" FontSize="11" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </StackLayout>
+                            </StackLayout>
+                            <Label Grid.Column="2" x:Name="StatoMotoriLabel2"
+                                Text="{Binding StatoMotoriLabel}"
+                                TextColor="{StaticResource AccentBlue}"
+                                FontSize="12" FontAttributes="Bold" VerticalOptions="Center"/>
+                        </Grid>
+
+                        <Grid Grid.Row="1" BackgroundColor="#1A2B4A" VerticalOptions="Fill" HorizontalOptions="Fill">
+                            <WebView x:Name="CameraWebView"
+                                Source="http://100.100.61.49:8080/stream"
+                                HorizontalOptions="Fill" VerticalOptions="Fill"
+                                MinimumHeightRequest="200"/>
+                        </Grid>
+
+                        <!-- ── CAMERA TILT (nuovo) ───────────────────────────── -->
+                        <StackLayout Grid.Row="2" Spacing="4" Padding="10,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border Grid.Column="0"
+                    BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                    Padding="4,2" Margin="0,0,6,0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+                                    <Label Text="CAM" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                                </Border>
+                                <Label Grid.Column="1" Text="Camera Tilt" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                                <Label Grid.Column="2" Text="{Binding ServoCamera, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4">
+                                <Border Grid.Column="0" BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1" Padding="4,3">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCamUp"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="▲ Su" TextColor="#00D4FF" FontSize="10" HorizontalOptions="Center"/>
+                                </Border>
+                                <Border Grid.Column="1" BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1" Padding="4,3">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCamCenter"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="◉ Centro" TextColor="#8BA3C4" FontSize="10" HorizontalOptions="Center"/>
+                                </Border>
+                                <Border Grid.Column="2" BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1" Padding="4,3">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="4"/>
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCamDown"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="▼ Giù" TextColor="#00D4FF" FontSize="10" HorizontalOptions="Center"/>
+                                </Border>
+                            </Grid>
+                            <Slider Minimum="80" Maximum="160"
+                Value="{Binding ServoCamera}"
+                Style="{StaticResource SliderOrange}"
+                HeightRequest="28"/>
+                        </StackLayout>
+
+                    </Grid>
+                </Border>
+
+                <!-- Sensori distanza -->
+                <Border Grid.Row="1" Style="{StaticResource Card}" Padding="14,10">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                        <Label Grid.Row="0" Text="SENSORI DISTANZA" Style="{StaticResource LabelSection}"/>
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*,*,*" ColumnSpacing="6">
+
+                            <Border Grid.Column="0" BackgroundColor="{StaticResource AccentBlueLight}" StrokeThickness="0" Padding="6,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <StackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="▲" TextColor="{StaticResource AccentBlue}" FontSize="13" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding DistFronte}"
+                                        TextColor="{Binding DistFronte, Converter={StaticResource DistanzaToColorConverter}}"
+                                        FontSize="11" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="F" TextColor="{StaticResource TextDim}" FontSize="9" HorizontalOptions="Center"/>
+                                </StackLayout>
+                            </Border>
+
+                            <Border Grid.Column="1" BackgroundColor="{StaticResource BgDeep}" StrokeThickness="0" Padding="6,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <StackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="▼" TextColor="{StaticResource TextSecondary}" FontSize="13" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding DistRetro}"
+                                        TextColor="{Binding DistRetro, Converter={StaticResource DistanzaToColorConverter}}"
+                                        FontSize="11" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="R" TextColor="{StaticResource TextDim}" FontSize="9" HorizontalOptions="Center"/>
+                                </StackLayout>
+                            </Border>
+
+                            <Border Grid.Column="2" BackgroundColor="{StaticResource BgDeep}" StrokeThickness="0" Padding="6,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <StackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="◀" TextColor="{StaticResource TextSecondary}" FontSize="13" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding DistSinistra}"
+                                        TextColor="{Binding DistSinistra, Converter={StaticResource DistanzaToColorConverter}}"
+                                        FontSize="11" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="SX" TextColor="{StaticResource TextDim}" FontSize="9" HorizontalOptions="Center"/>
+                                </StackLayout>
+                            </Border>
+
+                            <Border Grid.Column="3" BackgroundColor="{StaticResource BgDeep}" StrokeThickness="0" Padding="6,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <StackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="▶" TextColor="{StaticResource TextSecondary}" FontSize="13" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding DistDestra}"
+                                        TextColor="{Binding DistDestra, Converter={StaticResource DistanzaToColorConverter}}"
+                                        FontSize="11" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="DX" TextColor="{StaticResource TextDim}" FontSize="9" HorizontalOptions="Center"/>
+                                </StackLayout>
+                            </Border>
+
+                            <Border Grid.Column="4" BackgroundColor="{StaticResource BgDeep}" StrokeThickness="0" Padding="6,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <StackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="⚠" TextColor="{StaticResource AccentOrange}" FontSize="13" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding DistCliffF}" TextColor="{StaticResource TextSecondary}"
+                                        FontSize="11" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="CF" TextColor="{StaticResource TextDim}" FontSize="9" HorizontalOptions="Center"/>
+                                </StackLayout>
+                            </Border>
+
+                            <Border Grid.Column="5" BackgroundColor="{StaticResource BgDeep}" StrokeThickness="0" Padding="6,8">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <StackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="⚠" TextColor="{StaticResource AccentOrange}" FontSize="13" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding DistCliffR}" TextColor="{StaticResource TextSecondary}"
+                                        FontSize="11" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="CR" TextColor="{StaticResource TextDim}" FontSize="9" HorizontalOptions="Center"/>
+                                </StackLayout>
+                            </Border>
+
+                        </Grid>
+                    </Grid>
+                </Border>
+
+            </Grid>
+
+            <!-- ════ COLONNA DESTRA: comandi + modalità ════ -->
+            <Grid Grid.Column="1" RowDefinitions="*,Auto" RowSpacing="10">
+
+                <!-- ══ MOVEMENT CONTROL — Grande, con tastiera ══ -->
+                <Border Grid.Row="0" Style="{StaticResource Card}" Padding="16,14">
+                    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="10">
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="MOVEMENT CONTROL" Style="{StaticResource LabelSection}"/>
+                            <Border Grid.Column="1"
+                                BackgroundColor="{StaticResource BgDeep}"
+                                Stroke="{StaticResource BorderMid}" StrokeThickness="1" Padding="8,3">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <StackLayout Orientation="Horizontal" Spacing="5">
+                                    <Label x:Name="KeyboardIndicator" Text="⌨" FontSize="12"
+                                        TextColor="{StaticResource TextDim}" VerticalOptions="Center"/>
+                                    <Label Text="TASTIERA" FontSize="10" FontAttributes="Bold"
+                                        TextColor="{StaticResource TextDim}" VerticalOptions="Center"/>
+                                    <BoxView x:Name="KeyboardActiveDot"
+                                        WidthRequest="7" HeightRequest="7" CornerRadius="3.5"
+                                        BackgroundColor="{StaticResource TextDim}" VerticalOptions="Center"/>
+                                </StackLayout>
+                            </Border>
+                        </Grid>
+
+                        <!-- D-Pad: dimensioni proporzionali alla colonna -->
+                        <Grid Grid.Row="1"
+                            RowDefinitions="*,*,*"
+                            ColumnDefinitions="*,*,*"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            RowSpacing="8" ColumnSpacing="8"
+                            WidthRequest="276" HeightRequest="276">
+
+                            <Button Grid.Row="0" Grid.Column="0" Text="↖"
+                                Style="{StaticResource BtnCmd}" FontSize="22"
+                                Clicked="OnSxAvantiClicked" ToolTipProperties.Text="Diag Avanti-Sx [Q]"/>
+                            <Button Grid.Row="0" Grid.Column="1" Text="↑"
+                                Style="{StaticResource BtnCmd}" FontSize="26"
+                                Clicked="OnAvantiClicked" ToolTipProperties.Text="Avanti [W/↑]"/>
+                            <Button Grid.Row="0" Grid.Column="2" Text="↗"
+                                Style="{StaticResource BtnCmd}" FontSize="22"
+                                Clicked="OnDxAvantiClicked" ToolTipProperties.Text="Diag Avanti-Dx [E]"/>
+
+                            <Button Grid.Row="1" Grid.Column="0" Text="←"
+                                Style="{StaticResource BtnCmd}" FontSize="26"
+                                Clicked="OnSinistraClicked" ToolTipProperties.Text="Strafe Sx [A/←]"/>
+                            <Button Grid.Row="1" Grid.Column="1" Text="■"
+                                Style="{StaticResource BtnCmdStop}" FontSize="20"
+                                Clicked="OnStopClicked" ToolTipProperties.Text="STOP [Space]"/>
+                            <Button Grid.Row="1" Grid.Column="2" Text="→"
+                                Style="{StaticResource BtnCmd}" FontSize="26"
+                                Clicked="OnDestraClicked" ToolTipProperties.Text="Strafe Dx [D/→]"/>
+
+                            <Button Grid.Row="2" Grid.Column="0" Text="↺"
+                                Style="{StaticResource BtnCmd}" FontSize="22"
+                                Clicked="OnRotaSxClicked" ToolTipProperties.Text="Ruota Sx [Z]"/>
+                            <Button Grid.Row="2" Grid.Column="1" Text="↓"
+                                Style="{StaticResource BtnCmd}" FontSize="26"
+                                Clicked="OnIndietroClicked" ToolTipProperties.Text="Indietro [S/↓]"/>
+                            <Button Grid.Row="2" Grid.Column="2" Text="↻"
+                                Style="{StaticResource BtnCmd}" FontSize="22"
+                                Clicked="OnRotaDxClicked" ToolTipProperties.Text="Ruota Dx [X]"/>
+
+                        </Grid>
+
+                        <!-- Legenda tasti -->
+                        <Border Grid.Row="2" BackgroundColor="{StaticResource BgDeep}" StrokeThickness="0" Padding="10,6">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="6"/>
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="4">
+                                <StackLayout Grid.Column="0" Orientation="Horizontal" Spacing="3" HorizontalOptions="Center">
+                                    <Label Text="W/↑" TextColor="{StaticResource AccentBlue}" FontSize="10" FontAttributes="Bold"/>
+                                    <Label Text="Avanti" TextColor="{StaticResource TextSecondary}" FontSize="10"/>
+                                </StackLayout>
+                                <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="3" HorizontalOptions="Center">
+                                    <Label Text="A/D" TextColor="{StaticResource AccentBlue}" FontSize="10" FontAttributes="Bold"/>
+                                    <Label Text="Strafe" TextColor="{StaticResource TextSecondary}" FontSize="10"/>
+                                </StackLayout>
+                                <StackLayout Grid.Column="2" Orientation="Horizontal" Spacing="3" HorizontalOptions="Center">
+                                    <Label Text="Z/X" TextColor="{StaticResource AccentBlue}" FontSize="10" FontAttributes="Bold"/>
+                                    <Label Text="Ruota" TextColor="{StaticResource TextSecondary}" FontSize="10"/>
+                                </StackLayout>
+                                <StackLayout Grid.Column="3" Orientation="Horizontal" Spacing="3" HorizontalOptions="Center">
+                                    <Label Text="Space" TextColor="{StaticResource AccentRed}" FontSize="10" FontAttributes="Bold"/>
+                                    <Label Text="Stop" TextColor="{StaticResource TextSecondary}" FontSize="10"/>
+                                </StackLayout>
+                            </Grid>
+                        </Border>
+
+                        <!-- Velocità -->
+                        <Grid Grid.Row="3" RowDefinitions="Auto,Auto" RowSpacing="4">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="VELOCITÀ" Style="{StaticResource LabelSection}" VerticalOptions="Center"/>
+                                <Label Grid.Column="1" Text="{Binding VelocitaGlobale}" Style="{StaticResource LabelValue}" FontSize="14"/>
+                            </Grid>
+                            <Slider Grid.Row="1" Minimum="50" Maximum="255"
+                                Value="{Binding VelocitaGlobale}"
+                                Style="{StaticResource SliderBlue}"/>
+                        </Grid>
+
+                    </Grid>
+                </Border>
+
+                <!-- Modalità autonome -->
+                <Border Grid.Row="1" Style="{StaticResource Card}" Padding="14,12">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                        <Label Grid.Row="0" Text="MODALITÀ AUTONOME" Style="{StaticResource LabelSection}"/>
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <StackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                                <Label Text="Perlustrazione" Style="{StaticResource LabelPrimary}"/>
+                                <Label Text="Esplora autonomamente" TextColor="{StaticResource TextDim}" FontSize="10"/>
+                            </StackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding ModalitaPerlustrazione}"
+                                OnColor="{StaticResource AccentBlue}" ThumbColor="White"/>
+                        </Grid>
+                        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <StackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                                <Label Text="Insegui linea" Style="{StaticResource LabelPrimary}"/>
+                                <Label Text="Segui tracciato sul pavimento" TextColor="{StaticResource TextDim}" FontSize="10"/>
+                            </StackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding ModalitaInseguiLinea}"
+                                OnColor="{StaticResource AccentBlue}" ThumbColor="White"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Grid>
+
+        <!-- ══ GAMEPAD BAR ══ -->
+        <views:GamepadBar Grid.Row="2" x:Name="RobotGamepadBar"/>
+
+    </Grid>
+
+</ContentPage>

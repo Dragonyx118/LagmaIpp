@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LagmaIpp.Views.MusicPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:LagmaIpp.Views"
+    BackgroundColor="{StaticResource BgPage}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+
+        <!-- ── HEADER ─────────────────────────────────────────── -->
+        <views:HeaderView Grid.Row="0"/>
+
+        <!-- ── TAB SWITCHER (3 tab) ───────────────────────────── -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" Margin="16,10,16,0" ColumnSpacing="8">
+
+            <Border Grid.Column="0" x:Name="TabMusicBorder"
+                BackgroundColor="{StaticResource AccentBlue}"
+                StrokeThickness="0" Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6" Padding="0,10">
+                    <Image Source="music.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
+                    <Label x:Name="LblTabMusic" Text="Musica" TextColor="White" FontAttributes="Bold" FontSize="13" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabMusicClicked"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <Border Grid.Column="1" x:Name="TabSfxBorder"
+                BackgroundColor="{StaticResource BgCard}"
+                Stroke="{StaticResource BorderDim}" StrokeThickness="1" Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6" Padding="0,10">
+                    <Image Source="sound.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
+                    <Label x:Name="LblTabSfx" Text="Sound FX" TextColor="{StaticResource TextSecondary}" FontAttributes="Bold" FontSize="13" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabSfxClicked"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <Border Grid.Column="2" x:Name="TabVideoBorder"
+                BackgroundColor="{StaticResource BgCard}"
+                Stroke="{StaticResource BorderDim}" StrokeThickness="1" Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6" Padding="0,10">
+                    <Image Source="drone.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
+                    <Label x:Name="LblTabVideo" Text="Video" TextColor="{StaticResource TextSecondary}" FontAttributes="Bold" FontSize="13" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabVideoClicked"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+        </Grid>
+
+        <!-- ── CONTENUTO ──────────────────────────────────────── -->
+        <Grid Grid.Row="2">
+
+            <!-- ── MUSIC PANEL ────────────────────────────────── -->
+            <Grid x:Name="PanelMusic" RowDefinitions="Auto,*,Auto" IsVisible="True">
+
+                <Border Grid.Row="0" BackgroundColor="{StaticResource BgCard}"
+                    Stroke="{StaticResource BorderDim}" StrokeThickness="1"
+                    Margin="16,10,16,4" Padding="12,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24"/>
+                    </Border.StrokeShape>
+                    <SearchBar x:Name="SearchBarMusic" Placeholder="Cerca brano..."
+                        BackgroundColor="Transparent"
+                        PlaceholderColor="{StaticResource TextDim}"
+                        TextColor="{StaticResource TextPrimary}"
+                        CancelButtonColor="{StaticResource AccentBlue}"
+                        TextChanged="OnMusicSearchChanged"/>
+                </Border>
+
+                <CollectionView Grid.Row="1" x:Name="MusicList"
+                    Margin="0,4,0,0" SelectionMode="Single"
+                    SelectionChanged="OnMusicSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="*,Auto" Padding="16,10" ColumnSpacing="12">
+                                <StackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="{Binding DisplayName}"
+                                        Style="{StaticResource LabelPrimary}"
+                                        FontAttributes="Bold"
+                                        LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding SubFolder}"
+                                        Style="{StaticResource LabelSecondary}"
+                                        FontSize="11"
+                                        LineBreakMode="TailTruncation"/>
+                                </StackLayout>
+                                <Label Grid.Column="1" Text="▶"
+                                    TextColor="{StaticResource AccentBlue}"
+                                    FontSize="18" VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Border Grid.Row="2" HorizontalOptions="Start" Margin="16,0,0,8"
+                    BackgroundColor="{StaticResource BgCard}"
+                    Stroke="{StaticResource BorderMid}" StrokeThickness="1" Padding="14,8">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20"/>
+                    </Border.StrokeShape>
+                    <StackLayout Orientation="Horizontal" Spacing="8">
+                        <Label Text="⇄" FontSize="15" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center"/>
+                        <Label Text="SHUFFLE" FontAttributes="Bold" Style="{StaticResource LabelPrimary}" VerticalOptions="Center"/>
+                    </StackLayout>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnShuffleClicked"/>
+                    </Border.GestureRecognizers>
+                </Border>
+
+            </Grid>
+
+            <!-- ── SOUND FX PANEL ─────────────────────────────── -->
+            <Grid x:Name="PanelSfx" RowDefinitions="Auto,*" IsVisible="False">
+
+                <Label Grid.Row="0" Text="SOUND EFFECTS" Style="{StaticResource LabelSection}"
+                    Padding="16,12,16,6"/>
+
+                <ScrollView Grid.Row="1">
+                    <FlexLayout x:Name="SfxGrid"
+                        Wrap="Wrap" Direction="Row"
+                        JustifyContent="Start"
+                        AlignContent="Start"
+                        Padding="12,0,12,12"/>
+                </ScrollView>
+
+            </Grid>
+
+            <!-- ── VIDEO PANEL ────────────────────────────────── -->
+            <Grid x:Name="PanelVideo" RowDefinitions="Auto,*" IsVisible="False">
+
+                <Label Grid.Row="0" Text="VIDEO &amp; IMMAGINI" Style="{StaticResource LabelSection}"
+                    Padding="16,12,16,6"/>
+
+                <CollectionView Grid.Row="1" x:Name="VideoList"
+                    Margin="0,0,0,0" SelectionMode="Single"
+                    SelectionChanged="OnVideoSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,*,Auto" Padding="16,10" ColumnSpacing="12">
+                                <!-- Icona tipo file -->
+                                <Border Grid.Column="0"
+                                    BackgroundColor="{StaticResource BgDeep}"
+                                    StrokeThickness="0" WidthRequest="40" HeightRequest="40">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8"/>
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding TypeIcon}"
+                                        FontSize="20"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"/>
+                                </Border>
+                                <StackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="{Binding DisplayName}"
+                                        Style="{StaticResource LabelPrimary}"
+                                        FontAttributes="Bold"
+                                        LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding FileType}"
+                                        TextColor="{StaticResource TextDim}"
+                                        FontSize="11"/>
+                                </StackLayout>
+                                <Label Grid.Column="2" Text="▶"
+                                    TextColor="{StaticResource AccentOrange}"
+                                    FontSize="18" VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- ── VOLUME BAR ──────────────────────────────────────── -->
+        <Border Grid.Row="3"
+            BackgroundColor="{StaticResource BgCard}"
+            Stroke="{StaticResource BorderDim}" StrokeThickness="1"
+            Padding="14,8" Margin="12,0,12,0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="10">
+
+                <Label Grid.Column="0" Text="🔊" FontSize="17" VerticalOptions="Center"/>
+
+                <Slider Grid.Column="1"
+                    Minimum="0" Maximum="100"
+                    Value="{Binding Volume}"
+                    ThumbColor="{StaticResource AccentBlue}"
+                    MinimumTrackColor="{StaticResource AccentBlue}"
+                    MaximumTrackColor="{StaticResource BorderDim}"
+                    VerticalOptions="Center"/>
+
+                <Label Grid.Column="2"
+                    Text="{Binding Volume, StringFormat='{0}%'}"
+                    TextColor="{StaticResource TextSecondary}"
+                    FontSize="11" WidthRequest="36"
+                    HorizontalOptions="Center" VerticalOptions="Center"/>
+
+                <Border Grid.Column="3" x:Name="BtnMute"
+                    BackgroundColor="{StaticResource BgInput}"
+                    Stroke="{StaticResource BorderDim}" StrokeThickness="1" Padding="10,5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMuteClicked"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="🔇" FontSize="15" VerticalOptions="Center"/>
+                </Border>
+
+                <Border Grid.Column="4"
+                    BackgroundColor="{StaticResource BgInput}"
+                    Stroke="{StaticResource BorderDim}" StrokeThickness="1" Padding="10,5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMaxVolumeClicked"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="🔔" FontSize="15" VerticalOptions="Center"/>
+                </Border>
+
+            </Grid>
+        </Border>
+
+        <!-- ── PLAYER BAR ──────────────────────────────────────── -->
+        <Border Grid.Row="4" BackgroundColor="{StaticResource BgCard}"
+            Stroke="{StaticResource BorderDim}" StrokeThickness="0"
+            Padding="12,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0"/>
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+
+                <StackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center">
+                    <Label x:Name="CurrentTitle" Text="—"
+                        Style="{StaticResource LabelPrimary}" FontAttributes="Bold"
+                        LineBreakMode="TailTruncation"/>
+                    <Label x:Name="CurrentType" Text="Nessuna riproduzione"
+                        Style="{StaticResource LabelSecondary}" FontSize="11"/>
+                </StackLayout>
+
+                <Button Grid.Column="1" x:Name="BtnStop" Text="■  STOP"
+                    BackgroundColor="{StaticResource AccentRed}" TextColor="White"
+                    CornerRadius="20" HeightRequest="38" Padding="12,0"
+                    FontAttributes="Bold" FontSize="12"
+                    Clicked="OnStopClicked"/>
+
+                <Button Grid.Column="2" x:Name="BtnPlayPause" Text="▶  PLAY"
+                    BackgroundColor="{StaticResource AccentGreen}" TextColor="{StaticResource BgDeep}"
+                    CornerRadius="20" HeightRequest="38" Padding="12,0"
+                    FontAttributes="Bold" FontSize="12"
+                    Clicked="OnPlayPauseClicked"/>
+
+                <Border Grid.Column="3"
+                    BackgroundColor="{StaticResource BgInput}"
+                    Stroke="{StaticResource BorderDim}" StrokeThickness="1"
+                    Padding="10,5" VerticalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRefreshClicked"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="↻" FontSize="18" TextColor="{StaticResource AccentBlue}" VerticalOptions="Center"/>
+                </Border>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LagmaIpp.Views.MqttPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:LagmaIpp.Views"
+    BackgroundColor="{StaticResource BgPage}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- ── HEADER ─────────────────────────────────────────── -->
+        <views:HeaderView Grid.Row="0"/>
+
+        <!-- ── STATO CONNESSIONE ──────────────────────────────── -->
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*,Auto"
+            Padding="12,8"
+            BackgroundColor="{StaticResource BgCard}">
+
+            <StackLayout Grid.Column="0" Spacing="3">
+                <StackLayout Orientation="Horizontal" Spacing="8">
+                    <Label Text="Broker:" Style="{StaticResource LabelSecondary}" FontAttributes="Bold"/>
+                    <Label x:Name="LblBroker" Text="100.100.61.49:1883" Style="{StaticResource LabelValue}"/>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" Spacing="8">
+                    <BoxView x:Name="DotConnesso" Style="{StaticResource StatusDot}" Color="{StaticResource AccentRed}"/>
+                    <Label x:Name="LblStato" Text="DISCONNESSO" Style="{StaticResource LabelPrimary}" FontAttributes="Bold" TextColor="{StaticResource AccentRed}"/>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" Spacing="16">
+                    <StackLayout Orientation="Horizontal" Spacing="4">
+                        <Label Text="RX:" Style="{StaticResource LabelSecondary}"/>
+                        <Label x:Name="LblRx" Text="0" Style="{StaticResource LabelValue}"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal" Spacing="4">
+                        <Label Text="TX:" Style="{StaticResource LabelSecondary}"/>
+                        <Label x:Name="LblTx" Text="0" Style="{StaticResource LabelValue}"/>
+                    </StackLayout>
+                </StackLayout>
+            </StackLayout>
+
+            <StackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
+                <Button x:Name="BtnConnect" Text="Connetti" Style="{StaticResource BtnSuccess}"
+                    HeightRequest="34" Padding="12,0" FontSize="12" Clicked="OnConnectClicked"/>
+                <Button x:Name="BtnDisconnect" Text="Disconnetti" Style="{StaticResource BtnDanger}"
+                    HeightRequest="34" Padding="12,0" FontSize="12" IsEnabled="False" Clicked="OnDisconnectClicked"/>
+            </StackLayout>
+        </Grid>
+
+        <!-- ── CONTENUTO PRINCIPALE: topic list + terminale laterale ─ -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,220">
+
+            <!-- ─ COLONNA SINISTRA: Topic Monitor ──────────────── -->
+            <Grid ColumnDefinitions="*" RowDefinitions="Auto,*">
+
+                <Label Grid.Row="0" Text="TOPIC MONITOR" Style="{StaticResource LabelSection}"
+                    Padding="12,10,12,6"/>
+
+                <ScrollView Grid.Row="1">
+                    <StackLayout x:Name="TopicList" Padding="8,0,8,8" Spacing="6">
+                        <!-- Topic cards aggiunte dinamicamente -->
+                    </StackLayout>
+                </ScrollView>
+
+            </Grid>
+
+            <!-- ─ COLONNA DESTRA: Terminale + Publish ─────────── -->
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto"
+                BackgroundColor="{StaticResource BgDeep}"
+                Padding="0">
+
+                <!-- Pannello stats throughput -->
+                <StackLayout Grid.Row="0" Padding="8,6" Spacing="4" BackgroundColor="{StaticResource BgCard}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="THROUGHPUT" Style="{StaticResource LabelSection}" VerticalOptions="Center"/>
+                        <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <Label x:Name="LblMsgsPerSec" Text="0 msg/s"
+                                Style="{StaticResource LabelValue}" FontSize="10" VerticalOptions="Center"/>
+                            <Label Text="up:" Style="{StaticResource LabelSecondary}" FontSize="10" VerticalOptions="Center"/>
+                            <Label x:Name="LblUptime" Text="--:--"
+                                Style="{StaticResource LabelValue}" FontSize="10" VerticalOptions="Center"/>
+                        </StackLayout>
+                    </Grid>
+                    <GraphicsView x:Name="NetworkGraph"
+                        HeightRequest="50"
+                        BackgroundColor="{StaticResource BgDeep}"/>
+                </StackLayout>
+
+                <!-- Header terminale -->
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Padding="8,6" BackgroundColor="{StaticResource BgCard}">
+                    <StackLayout Grid.Column="0" Orientation="Horizontal" Spacing="6">
+                        <Label Text="LOG" Style="{StaticResource LabelSection}" VerticalOptions="Center"/>
+                        <Label x:Name="LblLogCount" Text="(0)" Style="{StaticResource LabelSecondary}" VerticalOptions="Center"/>
+                    </StackLayout>
+                    <Button Grid.Column="1" Text="" ImageSource="delete.png" BackgroundColor="Transparent"
+                        TextColor="{StaticResource AccentRed}" Padding="4,0" FontSize="11"
+                        HeightRequest="28" WidthRequest="28" Clicked="OnClearLogClicked"/>
+                </Grid>
+
+                <!-- Log scrollabile -->
+                <CollectionView Grid.Row="2" x:Name="LogView" BackgroundColor="{StaticResource BgDeep}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Label Text="{Binding .}" TextColor="{StaticResource AccentGreen}"
+                                FontFamily="Courier New" FontSize="10"
+                                Padding="6,1" LineBreakMode="TailTruncation"/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Separatore -->
+                <BoxView Grid.Row="3" HeightRequest="1" Color="{StaticResource BorderDim}"/>
+
+                <!-- Label Publish -->
+                <Label Grid.Row="4" Text="PUBLISH" Style="{StaticResource LabelSection}" Padding="8,6,8,2"/>
+
+                <!-- Input topic + payload -->
+                <StackLayout Grid.Row="5" Padding="6,0" Spacing="4">
+                    <Border BackgroundColor="{StaticResource BgCard}" StrokeThickness="1"
+                        Stroke="{StaticResource BorderDim}" Padding="6,3">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="6"/>
+                        </Border.StrokeShape>
+                        <Entry x:Name="EntryTopic" Placeholder="topic" BackgroundColor="Transparent"
+                            TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextDim}"
+                            FontFamily="Courier New" FontSize="11"/>
+                    </Border>
+                    <Border BackgroundColor="{StaticResource BgCard}" StrokeThickness="1"
+                        Stroke="{StaticResource BorderDim}" Padding="6,3">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="6"/>
+                        </Border.StrokeShape>
+                        <Entry x:Name="EntryPayload" Placeholder="payload" BackgroundColor="Transparent"
+                            TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextDim}"
+                            FontFamily="Courier New" FontSize="11"/>
+                    </Border>
+                </StackLayout>
+
+                <!-- Pulsante Publish + Retain -->
+                <Grid Grid.Row="6" ColumnDefinitions="*,Auto" Padding="6,4,6,8" ColumnSpacing="6">
+                    <Button Grid.Column="0" Text="Send" ImageSource="send.png" Style="{StaticResource BtnPrimary}"
+                        HeightRequest="36" FontSize="12" Clicked="OnPublishClicked"/>
+                    <StackLayout Grid.Column="1" Orientation="Vertical" Spacing="1" VerticalOptions="Center">
+                        <Label Text="Retain" Style="{StaticResource LabelSecondary}" FontSize="9" HorizontalOptions="Center"/>
+                        <Switch x:Name="SwitchRetain" OnColor="{StaticResource AccentCyan}" Scale="0.75"/>
+                    </StackLayout>
+                </Grid>
+
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

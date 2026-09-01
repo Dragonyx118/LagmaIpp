@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LagmaIpp.Views.RobotArmPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:LagmaIpp.Views"
+    BackgroundColor="{StaticResource BgPage}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+        <!-- ── HEADER ─────────────────────────────────────────── -->
+        <views:HeaderView Grid.Row="0"/>
+
+        <!-- ── CONTENUTO PRINCIPALE ───────────────────────────── -->
+        <Grid Grid.Row="1" ColumnDefinitions="110,*,Auto">
+
+            <!-- ── IMMAGINE BRACCIO ───────────────────────────── -->
+            <Image Grid.Column="0"
+                Source="robot_arm.png"
+                VerticalOptions="Fill"
+                HorizontalOptions="Fill"
+                Aspect="AspectFit"
+                Margin="6,8,0,8"/>
+
+            <!-- ── SLIDER SERVO (compatti) ────────────────────── -->
+            <ScrollView Grid.Column="1">
+                <StackLayout Padding="10,12,6,12" Spacing="10" VerticalOptions="Center">
+
+                    <!-- Grip -->
+                    <StackLayout Spacing="1" x:Name="SliderGroup5">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0" x:Name="ServoBadge5"
+                                BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                                Padding="4,2" Margin="0,0,6,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Label Text="S5" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="Grip" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                            <Label Grid.Column="2" Text="{Binding Servo5, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                        </Grid>
+                        <Slider Minimum="0" Maximum="180" Value="{Binding Servo5}"
+                            Style="{StaticResource SliderOrange}" HeightRequest="28"/>
+                    </StackLayout>
+
+                    <!-- Wrist Pitch -->
+                    <StackLayout Spacing="1" x:Name="SliderGroup3">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0" x:Name="ServoBadge3"
+                                BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                                Padding="4,2" Margin="0,0,6,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Label Text="S3" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="Wrist Pitch" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                            <Label Grid.Column="2" Text="{Binding Servo3, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                        </Grid>
+                        <Slider Minimum="0" Maximum="180" Value="{Binding Servo3}"
+                            Style="{StaticResource SliderOrange}" HeightRequest="28"/>
+                    </StackLayout>
+
+                    <!-- Wrist Roll -->
+                    <StackLayout Spacing="1" x:Name="SliderGroup4">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0" x:Name="ServoBadge4"
+                                BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                                Padding="4,2" Margin="0,0,6,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Label Text="S4" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="Wrist Roll" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                            <Label Grid.Column="2" Text="{Binding Servo4, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                        </Grid>
+                        <Slider Minimum="0" Maximum="180" Value="{Binding Servo4}"
+                            Style="{StaticResource SliderOrange}" HeightRequest="28"/>
+                    </StackLayout>
+
+                    <!-- Elbow -->
+                    <StackLayout Spacing="1" x:Name="SliderGroup2">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0" x:Name="ServoBadge2"
+                                BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                                Padding="4,2" Margin="0,0,6,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Label Text="S2" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="Elbow" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                            <Label Grid.Column="2" Text="{Binding Servo2, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                        </Grid>
+                        <Slider Minimum="0" Maximum="180" Value="{Binding Servo2}"
+                            Style="{StaticResource SliderOrange}" HeightRequest="28"/>
+                    </StackLayout>
+
+                    <!-- Shoulder -->
+                    <StackLayout Spacing="1" x:Name="SliderGroup1">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0" x:Name="ServoBadge1"
+                                BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                                Padding="4,2" Margin="0,0,6,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Label Text="S1" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="Shoulder" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                            <Label Grid.Column="2" Text="{Binding Servo1, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                        </Grid>
+                        <Slider Minimum="0" Maximum="180" Value="{Binding Servo1}"
+                            Style="{StaticResource SliderOrange}" HeightRequest="28"/>
+                    </StackLayout>
+
+                    <!-- Waist -->
+                    <StackLayout Spacing="1" x:Name="SliderGroup0">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0" x:Name="ServoBadge0"
+                                BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                                Padding="4,2" Margin="0,0,6,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Label Text="S0" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="Waist" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                            <Label Grid.Column="2" Text="{Binding Servo0, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                        </Grid>
+                        <Slider Minimum="0" Maximum="180" Value="{Binding Servo0}"
+                            Style="{StaticResource SliderOrange}" HeightRequest="28"/>
+                    </StackLayout>
+
+
+                    <!-- Camera Tilt -->
+                    <StackLayout Spacing="1" x:Name="SliderGroupCam">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0" x:Name="ServoBadgeCam"
+                                BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1"
+                                Padding="4,2" Margin="0,0,6,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Label Text="CAM" TextColor="#3D5068" FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="Camera Tilt" Style="{StaticResource LabelPrimary}" FontSize="12" FontAttributes="Bold"/>
+                            <Label Grid.Column="2" Text="{Binding ServoCamera, StringFormat='{0:F0}°'}" Style="{StaticResource LabelValue}" FontSize="11"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4" Margin="0,2,0,0">
+                            <Border Grid.Column="0" BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1" Padding="4,3">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCamUp"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="▲ Su" TextColor="#00D4FF" FontSize="10" HorizontalOptions="Center"/>
+                            </Border>
+                            <Border Grid.Column="1" BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1" Padding="4,3">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCamCenter"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="◉ Centro" TextColor="#8BA3C4" FontSize="10" HorizontalOptions="Center"/>
+                            </Border>
+                            <Border Grid.Column="2" BackgroundColor="#0A1628" Stroke="#1E2A38" StrokeThickness="1" Padding="4,3">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCamDown"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="▼ Giù" TextColor="#00D4FF" FontSize="10" HorizontalOptions="Center"/>
+                            </Border>
+                        </Grid>
+                        <Slider x:Name="CameraSlider"
+                            Minimum="80" Maximum="160"
+                            Value="{Binding ServoCamera}"
+                            Style="{StaticResource SliderOrange}"
+                            HeightRequest="28"/>
+                    </StackLayout>
+
+                </StackLayout>
+            </ScrollView>
+
+            <!-- ── MINI PANNELLO PRESET ────────────────────────── -->
+            <Border Grid.Column="2"
+                BackgroundColor="{StaticResource BgCard}"
+                Stroke="{StaticResource BorderDim}"
+                StrokeThickness="1"
+                Margin="4,8,8,8"
+                Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,*,Auto" WidthRequest="130">
+
+                    <Label Grid.Row="0" Text="PRESET" Style="{StaticResource LabelSection}"
+                        Padding="8,8,8,4" HorizontalOptions="Center"/>
+
+                    <ScrollView Grid.Row="1">
+                        <StackLayout x:Name="PresetList" Padding="6,0" Spacing="4">
+                            <Border BackgroundColor="{StaticResource BgDeep}"
+                                Stroke="{StaticResource BorderDim}" StrokeThickness="1" Padding="8,6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="6"/>
+                                </Border.StrokeShape>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="Home" Style="{StaticResource LabelPrimary}" FontSize="11" VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="▶" TextColor="{StaticResource AccentCyan}" FontSize="13" VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnPresetPlayClicked"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </ScrollView>
+
+                    <StackLayout Grid.Row="2" Padding="6,4,6,8" Spacing="4">
+                        <Button Text="Salva" ImageSource="save.png" Style="{StaticResource BtnPrimary}"
+                            HeightRequest="32" FontSize="11" Padding="4,0"
+                            Clicked="OnSavePresetClicked"/>
+                        <Button Text="Elimina" ImageSource="delete.png" Style="{StaticResource BtnDanger}"
+                            HeightRequest="32" FontSize="11" Padding="4,0"
+                            Clicked="OnDeletePresetClicked"/>
+                    </StackLayout>
+
+                </Grid>
+            </Border>
+
+        </Grid>
+
+        <!-- ── TOOLBAR INFERIORE ──────────────────────────────── -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto"
+            Padding="12,8" BackgroundColor="{StaticResource BgPage}">
+
+            <Button Grid.Column="0" x:Name="BtnLiveMode"
+                Text="◀  Live mode"
+                BackgroundColor="{StaticResource AccentRed}"
+                TextColor="White" CornerRadius="24"
+                HeightRequest="44" Padding="16,0"
+                FontAttributes="Bold"
+                Clicked="OnLiveModeClicked"/>
+
+            <BoxView Grid.Column="1" Color="Transparent"/>
+
+            <Button Grid.Column="2" Text="" ImageSource="brain.png"
+                BackgroundColor="{StaticResource BgCard}"
+                TextColor="{StaticResource TextPrimary}"
+                CornerRadius="22" HeightRequest="44" WidthRequest="44"
+                Padding="0" FontSize="20"
+                Clicked="OnPresetClicked"/>
+
+        </Grid>
+
+        <!-- ── GAMEPAD BAR ──────────────────────────────────────── -->
+        <views:GamepadBar Grid.Row="3" x:Name="ArmGamepadBar" Margin="12,0,12,8"/>
+
+    </Grid>
+
+</ContentPage>

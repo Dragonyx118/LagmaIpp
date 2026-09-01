@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LagmaIpp.Views.MapPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:LagmaIpp.Views"
+    BackgroundColor="{StaticResource BgPage}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- ── HEADER ─────────────────────────────────────────── -->
+        <views:HeaderView Grid.Row="0"/>
+
+        <!-- ── TAB SELECTOR ──────────────────────────────────── -->
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*,*"
+            Padding="12,8"
+            ColumnSpacing="8">
+
+            <Button
+                Grid.Column="0"
+                x:Name="BtnTabGps"
+                Text="GPS Map" ImageSource="gps.png"
+                Clicked="OnTabGpsClicked"
+                BackgroundColor="{StaticResource AccentBlue}"
+                TextColor="White"
+                CornerRadius="20"
+                HeightRequest="40"
+                FontAttributes="Bold"/>
+
+            <Button
+                Grid.Column="1"
+                x:Name="BtnTabGrid"
+                Text="Occupancy Grid" ImageSource="map.png"
+                Clicked="OnTabGridClicked"
+                BackgroundColor="#E0E0E0"
+                TextColor="{StaticResource TextPrimary}"
+                CornerRadius="20"
+                HeightRequest="40"
+                FontAttributes="Bold"/>
+
+        </Grid>
+
+        <!-- ── CONTENUTO TAB ──────────────────────────────────── -->
+        <Grid Grid.Row="2">
+
+            <!-- ══ TAB 1: GPS MAP (OpenStreetMap via Leaflet) ══ -->
+            <Grid x:Name="TabGps" IsVisible="True">
+                <WebView
+                    x:Name="GpsMapView"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill"/>
+
+                <!-- Overlay info GPS -->
+                <Border
+                    HorizontalOptions="Start"
+                    VerticalOptions="Start"
+                    Margin="8"
+                    BackgroundColor="#CC000000"
+                    StrokeThickness="0"
+                    Padding="10,6">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <StackLayout Spacing="2">
+                        <Label
+                            x:Name="GpsLatLabel"
+                            Text="Lat: --"
+                            TextColor="White"
+                            FontSize="12"
+                            FontAttributes="Bold"/>
+                        <Label
+                            x:Name="GpsLonLabel"
+                            Text="Lon: --"
+                            TextColor="White"
+                            FontSize="12"/>
+                        <Label
+                            x:Name="GpsAltLabel"
+                            Text="Alt: -- m"
+                            TextColor="White"
+                            FontSize="12"/>
+                        <Label
+                            x:Name="GpsSatLabel"
+                            Text="Sat: --"
+                            TextColor="#00C853"
+                            FontSize="12"/>
+                        <Label
+                            x:Name="GpsSpeedLabel"
+                            Text="Vel: -- kn"
+                            TextColor="White"
+                            FontSize="12"/>
+                    </StackLayout>
+                </Border>
+
+                <!-- Badge GPS offline -->
+                <Border
+                    x:Name="GpsOfflineBadge"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    IsVisible="True"
+                    BackgroundColor="#CCF44336"
+                    StrokeThickness="0"
+                    Padding="16,8">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Label
+                        Text="GPS non disponibile"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="14"/>
+                </Border>
+
+            </Grid>
+
+            <!-- ══ TAB 2: OCCUPANCY GRID ══ -->
+            <Grid x:Name="TabGrid" IsVisible="False" RowDefinitions="Auto,*">
+
+                <!-- Info odometria -->
+                <Grid
+                    Grid.Row="0"
+                    ColumnDefinitions="*,*,*"
+                    Padding="12,6"
+                    BackgroundColor="#F5F5F5">
+
+                    <StackLayout Grid.Column="0" Spacing="0" HorizontalOptions="Center">
+                        <Label Text="X" Style="{StaticResource LabelSecondary}" HorizontalOptions="Center"/>
+                        <Label x:Name="OdoX" Text="0.00 m" Style="{StaticResource LabelValue}" HorizontalOptions="Center"/>
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="1" Spacing="0" HorizontalOptions="Center">
+                        <Label Text="Y" Style="{StaticResource LabelSecondary}" HorizontalOptions="Center"/>
+                        <Label x:Name="OdoY" Text="0.00 m" Style="{StaticResource LabelValue}" HorizontalOptions="Center"/>
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="2" Spacing="0" HorizontalOptions="Center">
+                        <Label Text="θ" Style="{StaticResource LabelSecondary}" HorizontalOptions="Center"/>
+                        <Label x:Name="OdoTheta" Text="0.0°" Style="{StaticResource LabelValue}" HorizontalOptions="Center"/>
+                    </StackLayout>
+
+                </Grid>
+
+                <!-- Canvas occupancy grid -->
+                <GraphicsView
+                    Grid.Row="1"
+                    x:Name="GridCanvas"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill"
+                    BackgroundColor="#1A1A2E"/>
+
+                <!-- Overlay distanze sensori -->
+                <Border
+                    Grid.Row="1"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    Margin="8"
+                    BackgroundColor="#CC000000"
+                    StrokeThickness="0"
+                    Padding="10,6">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <StackLayout Spacing="3">
+                        <Label Text="Sensori" TextColor="White" FontAttributes="Bold" FontSize="12"/>
+                        <Label x:Name="SensFronte"   Text="▲ Fronte:  ---"  TextColor="#00C853" FontSize="11"/>
+                        <Label x:Name="SensRetro"    Text="▼ Retro:   ---"  TextColor="#00C853" FontSize="11"/>
+                        <Label x:Name="SensSinistra" Text="◀ Sinistra: ---" TextColor="#00C853" FontSize="11"/>
+                        <Label x:Name="SensDestra"   Text="▶ Destra:  ---"  TextColor="#00C853" FontSize="11"/>
+                        <Label x:Name="SensCliff"    Text="Cliff: OK"     TextColor="#00C853" FontSize="11"/>
+                    </StackLayout>
+                </Border>
+
+                <!-- Badge cliff warning -->
+                <Border
+                    Grid.Row="1"
+                    x:Name="CliffWarning"
+                    IsVisible="False"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End"
+                    Margin="0,0,0,16"
+                    BackgroundColor="#FFCC00"
+                    StrokeThickness="0"
+                    Padding="16,8">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Label
+                        Text="CLIFF RILEVATO!"
+                        TextColor="Black"
+                        FontAttributes="Bold"
+                        FontSize="14"/>
+                </Border>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- ── TOOLBAR INFERIORE ──────────────────────────────── -->
+        <Grid
+            Grid.Row="3"
+            ColumnDefinitions="*,Auto,Auto"
+            Padding="12,8"
+            ColumnSpacing="8">
+
+            <!-- Modalità autonoma toggle -->
+            <StackLayout
+                Grid.Column="0"
+                Orientation="Horizontal"
+                Spacing="10"
+                VerticalOptions="Center">
+                <Label
+                    Text="Perlustrazione autonoma"
+                    Style="{StaticResource LabelPrimary}"
+                    VerticalOptions="Center"/>
+                <Switch
+                    x:Name="SwitchPerlustrazione"
+                    IsToggled="{Binding ModalitaPerlustrazione}"
+                    OnColor="{StaticResource AccentGreen}"
+                    ThumbColor="White"/>
+            </StackLayout>
+
+            <!-- Reset odometria -->
+            <Button
+                Grid.Column="1"
+                Text="Reset"
+                BackgroundColor="#E0E0E0"
+                TextColor="{StaticResource TextPrimary}"
+                CornerRadius="16"
+                HeightRequest="40"
+                Padding="12,0"
+                Clicked="OnResetOdoClicked"/>
+
+            <!-- Salva mappa -->
+            <Button
+                Grid.Column="2"
+                Text="" ImageSource="save.png"
+                BackgroundColor="{StaticResource AccentBlue}"
+                TextColor="White"
+                CornerRadius="16"
+                HeightRequest="40"
+                WidthRequest="40"
+                Padding="0"
+                FontSize="18"
+                Clicked="OnSaveMapClicked"/>
+
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

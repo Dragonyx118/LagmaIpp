@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LagmaIpp.Views.DronePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:LagmaIpp.Views"
+    BackgroundColor="{StaticResource BgPage}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+
+        <!-- ── HEADER ─────────────────────────────────────────── -->
+        <views:HeaderView Grid.Row="0"/>
+
+        <!-- ── STATO CONNESSIONE DRONE ────────────────────────── -->
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="Auto,*,Auto"
+            Padding="12,8"
+            BackgroundColor="{StaticResource BgPage}">
+
+            <!-- Stabilità connessione -->
+            <StackLayout
+                Grid.Column="0"
+                Orientation="Horizontal"
+                Spacing="6"
+                VerticalOptions="Center">
+                <Image Source="wifi_check.png" HeightRequest="22" WidthRequest="22"/>
+                <StackLayout Spacing="0">
+                    <Label
+                        Text="Connection stability:"
+                        Style="{StaticResource LabelPrimary}"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource AccentGreen}"/>
+                    <Label
+                        x:Name="PingLabel"
+                        Text="-- ms/ping"
+                        Style="{StaticResource LabelSecondary}"/>
+                </StackLayout>
+            </StackLayout>
+
+            <!-- Stato drone online/offline -->
+            <StackLayout
+                Grid.Column="1"
+                Orientation="Horizontal"
+                Spacing="6"
+                HorizontalOptions="End"
+                VerticalOptions="Center">
+                <BoxView
+                    Style="{StaticResource StatusDot}"
+                    Color="{Binding DroneOnline,
+                        Converter={StaticResource BoolToStatusColorConverter}}"/>
+                <Label
+                    Text="{Binding DroneOnline,
+                        Converter={StaticResource BoolToStringConverter},
+                        ConverterParameter='ONLINE|OFFLINE'}"
+                    Style="{StaticResource LabelPrimary}"
+                    FontAttributes="Bold"
+                    TextColor="{Binding DroneOnline,
+                        Converter={StaticResource BoolToStatusColorConverter}}"/>
+            </StackLayout>
+
+            <!-- Settings -->
+            <Border
+                Grid.Column="2"
+                BackgroundColor="#E0E0E0"
+                StrokeThickness="0"
+                Padding="10"
+                Margin="8,0,0,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+                <Image Source="robot_industrial.png" HeightRequest="20" WidthRequest="20"/>
+            </Border>
+
+        </Grid>
+
+        <!-- ── VALORI RPYT ────────────────────────────────────── -->
+        <Grid
+            Grid.Row="2"
+            RowDefinitions="*,Auto"
+            Padding="12,0">
+
+            <!-- Spazio centrale vuoto (come nel mockup) -->
+            <BoxView Grid.Row="0" Color="Transparent"/>
+
+            <!-- Valori numerici P R T Y -->
+            <Grid
+                Grid.Row="1"
+                ColumnDefinitions="*,*,*,*"
+                Margin="0,0,0,16">
+
+                <StackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="2">
+                    <Label Text="P:" Style="{StaticResource LabelPrimary}" HorizontalOptions="Center"/>
+                    <Label
+                        x:Name="PitchVal"
+                        Text="0"
+                        Style="{StaticResource LabelValue}"
+                        HorizontalOptions="Center"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
+                    <Label Text="R:" Style="{StaticResource LabelPrimary}" HorizontalOptions="Center"/>
+                    <Label
+                        x:Name="RollVal"
+                        Text="0"
+                        Style="{StaticResource LabelValue}"
+                        HorizontalOptions="Center"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="2">
+                    <Label Text="T:" Style="{StaticResource LabelPrimary}" HorizontalOptions="Center"/>
+                    <Label
+                        x:Name="ThrustVal"
+                        Text="0%"
+                        Style="{StaticResource LabelValue}"
+                        HorizontalOptions="Center"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="2">
+                    <Label Text="Y:" Style="{StaticResource LabelPrimary}" HorizontalOptions="Center"/>
+                    <Label
+                        x:Name="YawVal"
+                        Text="0"
+                        Style="{StaticResource LabelValue}"
+                        HorizontalOptions="Center"/>
+                </StackLayout>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- ── JOYSTICK AREA ───────────────────────────────────── -->
+        <Grid
+            Grid.Row="3"
+            x:Name="DroneJoystickArea"
+            ColumnDefinitions="*,*"
+            Padding="16,0,16,16">
+
+            <!-- ── JOYSTICK SINISTRO (Pitch + Roll) ─────────────── -->
+            <Grid Grid.Column="0" HorizontalOptions="Center">
+
+                <Ellipse
+                    x:Name="DroneJoyLeftOuter"
+                    Fill="#BBDEFB"
+                    Stroke="#1976D2"
+                    StrokeThickness="2.5"
+                    WidthRequest="140"
+                    HeightRequest="140"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+
+                <Label Text="∧" TextColor="#1976D2" FontSize="18" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,8,0,0"/>
+                <Label Text="∨" TextColor="#1976D2" FontSize="18" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,8"/>
+                <Label Text="〈" TextColor="#1976D2" FontSize="18" HorizontalOptions="Start" VerticalOptions="Center" Margin="8,0,0,0"/>
+                <Label Text="〉" TextColor="#1976D2" FontSize="18" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,8,0"/>
+
+                <Ellipse
+                    x:Name="DroneJoyLeftDot"
+                    Fill="#1976D2"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+
+            </Grid>
+
+            <!-- ── JOYSTICK DESTRO (Yaw + Thrust) ───────────────── -->
+            <Grid Grid.Column="1" HorizontalOptions="Center">
+
+                <Ellipse
+                    x:Name="DroneJoyRightOuter"
+                    Fill="#FFFDE7"
+                    Stroke="#F9A825"
+                    StrokeThickness="2.5"
+                    WidthRequest="140"
+                    HeightRequest="140"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+
+                <Label Text="∧" TextColor="#F9A825" FontSize="18" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,8,0,0"/>
+                <Label Text="∨" TextColor="#F9A825" FontSize="18" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,8"/>
+                <Label Text="〈" TextColor="#F9A825" FontSize="18" HorizontalOptions="Start" VerticalOptions="Center" Margin="8,0,0,0"/>
+                <Label Text="〉" TextColor="#F9A825" FontSize="18" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,8,0"/>
+
+                <Ellipse
+                    x:Name="DroneJoyRightDot"
+                    Fill="#F9A825"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- ── PULSANTI TURN-OFF + AUTO-LANDING ───────────────── -->
+        <Grid
+            Grid.Row="4"
+            ColumnDefinitions="*,*"
+            Padding="16,0,16,16"
+            ColumnSpacing="12">
+
+            <Button
+                Grid.Column="0"
+                Text="⏻  Turn-OFF"
+                Style="{StaticResource BtnDanger}"
+                BackgroundColor="#111111"
+                Clicked="OnDroneStopClicked"/>
+
+            <Button
+                Grid.Column="1"
+                Text="AUTO-LANDING" ImageSource="landing.png"
+                Style="{StaticResource BtnDanger}"
+                Clicked="OnDroneLandClicked"/>
+
+        </Grid>
+
+        <!-- ══ GAMEPAD BAR ══ -->
+        <views:GamepadBar Grid.Row="5" x:Name="DroneGamepadBar" Margin="14,0,14,8"/>
+
+    </Grid>
+
+</ContentPage>

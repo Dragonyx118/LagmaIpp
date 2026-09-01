@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:LagmaIpp.Converters"
+    x:Class="LagmaIpp.Resources.Styles.AppStyles">
+
+    <converters:BoolToStringConverter      x:Key="BoolToStringConverter"/>
+    <converters:BoolToColorConverter       x:Key="BoolToColorConverter"/>
+    <converters:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter"/>
+    <converters:DistanzaToColorConverter   x:Key="DistanzaToColorConverter"/>
+
+    <!-- ══════════════════════════════════════════════
+         PALETTE — Dashboard Blue Light
+    ══════════════════════════════════════════════ -->
+    <Color x:Key="BgPage">#F0F4F8</Color>
+    <Color x:Key="BgCard">#FFFFFF</Color>
+    <Color x:Key="BgDeep">#E8EEF5</Color>
+    <Color x:Key="BgInput">#F5F8FC</Color>
+    <Color x:Key="BgNav">#1A2B4A</Color>
+    <Color x:Key="BgNavHover">#243660</Color>
+    <Color x:Key="BorderDim">#DDE3EC</Color>
+    <Color x:Key="BorderMid">#B8C5D6</Color>
+    <Color x:Key="BorderBright">#0078D4</Color>
+    <Color x:Key="AccentBlue">#0078D4</Color>
+    <Color x:Key="AccentBlueDark">#005A9E</Color>
+    <Color x:Key="AccentBlueLight">#E8F4FD</Color>
+    <Color x:Key="AccentCyan">#00B4D8</Color>
+    <Color x:Key="AccentGreen">#00A86B</Color>
+    <Color x:Key="AccentRed">#D93025</Color>
+    <Color x:Key="AccentOrange">#E8870A</Color>
+    <Color x:Key="AccentYellow">#F5C518</Color>
+    <Color x:Key="TextPrimary">#1A2B4A</Color>
+    <Color x:Key="TextSecondary">#5A6E8A</Color>
+    <Color x:Key="TextDim">#8FA3BC</Color>
+    <Color x:Key="TextOnAccent">#FFFFFF</Color>
+    <Color x:Key="NavText">#FFFFFF</Color>
+    <Color x:Key="NavTextDim">#8BA3C4</Color>
+    <Color x:Key="NavActive">#0078D4</Color>
+
+    <!-- ══ LABEL STYLES ══ -->
+    <Style TargetType="Label" x:Key="LabelPageTitle">
+        <Setter Property="TextColor"        Value="{StaticResource TextPrimary}"/>
+        <Setter Property="FontSize"         Value="20"/>
+        <Setter Property="FontAttributes"   Value="Bold"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelSection">
+        <Setter Property="TextColor"        Value="{StaticResource TextSecondary}"/>
+        <Setter Property="FontSize"         Value="10"/>
+        <Setter Property="FontAttributes"   Value="Bold"/>
+        <Setter Property="CharacterSpacing" Value="2"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelPrimary">
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="FontSize"  Value="14"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelSecondary">
+        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+        <Setter Property="FontSize"  Value="12"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelValue">
+        <Setter Property="TextColor"      Value="{StaticResource AccentBlue}"/>
+        <Setter Property="FontSize"       Value="14"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelValueLarge">
+        <Setter Property="TextColor"      Value="{StaticResource AccentBlue}"/>
+        <Setter Property="FontSize"       Value="26"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelWarning">
+        <Setter Property="TextColor"      Value="{StaticResource AccentOrange}"/>
+        <Setter Property="FontSize"       Value="12"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelError">
+        <Setter Property="TextColor"      Value="{StaticResource AccentRed}"/>
+        <Setter Property="FontSize"       Value="12"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+    <Style TargetType="Label" x:Key="LabelSuccess">
+        <Setter Property="TextColor"      Value="{StaticResource AccentGreen}"/>
+        <Setter Property="FontSize"       Value="12"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+
+    <!-- ══ CARD STYLE ══ -->
+    <Style TargetType="Border" x:Key="Card">
+        <Setter Property="BackgroundColor"  Value="{StaticResource BgCard}"/>
+        <Setter Property="Stroke"           Value="{StaticResource BorderDim}"/>
+        <Setter Property="StrokeThickness"  Value="1"/>
+        <Setter Property="Padding"          Value="16"/>
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="12"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Shadow effect via inner shadow workaround -->
+    <Style TargetType="Border" x:Key="CardElevated">
+        <Setter Property="BackgroundColor"  Value="{StaticResource BgCard}"/>
+        <Setter Property="Stroke"           Value="{StaticResource BorderDim}"/>
+        <Setter Property="StrokeThickness"  Value="1"/>
+        <Setter Property="Padding"          Value="16"/>
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="14"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ══ STATUS DOT ══ -->
+    <Style TargetType="BoxView" x:Key="StatusDot">
+        <Setter Property="WidthRequest"     Value="8"/>
+        <Setter Property="HeightRequest"    Value="8"/>
+        <Setter Property="CornerRadius"     Value="4"/>
+        <Setter Property="VerticalOptions"  Value="Center"/>
+    </Style>
+
+    <!-- ══ BUTTON STYLES ══ -->
+    <Style TargetType="Button" x:Key="BtnPrimary">
+        <Setter Property="BackgroundColor"  Value="{StaticResource AccentBlue}"/>
+        <Setter Property="TextColor"        Value="White"/>
+        <Setter Property="CornerRadius"     Value="8"/>
+        <Setter Property="FontAttributes"   Value="Bold"/>
+        <Setter Property="FontSize"         Value="14"/>
+        <Setter Property="HeightRequest"    Value="44"/>
+    </Style>
+    <Style TargetType="Button" x:Key="BtnSecondary">
+        <Setter Property="BackgroundColor"  Value="{StaticResource BgDeep}"/>
+        <Setter Property="TextColor"        Value="{StaticResource TextPrimary}"/>
+        <Setter Property="BorderColor"      Value="{StaticResource BorderMid}"/>
+        <Setter Property="BorderWidth"      Value="1"/>
+        <Setter Property="CornerRadius"     Value="8"/>
+        <Setter Property="FontSize"         Value="14"/>
+        <Setter Property="HeightRequest"    Value="44"/>
+    </Style>
+    <Style TargetType="Button" x:Key="BtnSuccess">
+        <Setter Property="BackgroundColor"  Value="{StaticResource AccentGreen}"/>
+        <Setter Property="TextColor"        Value="White"/>
+        <Setter Property="CornerRadius"     Value="8"/>
+        <Setter Property="FontAttributes"   Value="Bold"/>
+        <Setter Property="FontSize"         Value="14"/>
+        <Setter Property="HeightRequest"    Value="44"/>
+    </Style>
+    <Style TargetType="Button" x:Key="BtnDanger">
+        <Setter Property="BackgroundColor"  Value="{StaticResource AccentRed}"/>
+        <Setter Property="TextColor"        Value="White"/>
+        <Setter Property="CornerRadius"     Value="8"/>
+        <Setter Property="FontAttributes"   Value="Bold"/>
+        <Setter Property="FontSize"         Value="14"/>
+        <Setter Property="HeightRequest"    Value="44"/>
+    </Style>
+
+    <!-- ══ JOYSTICK COMMAND BUTTON — grande, quadrato ══ -->
+    <Style TargetType="Button" x:Key="BtnCmd">
+        <Setter Property="BackgroundColor"  Value="{StaticResource BgCard}"/>
+        <Setter Property="TextColor"        Value="{StaticResource AccentBlue}"/>
+        <Setter Property="BorderColor"      Value="{StaticResource BorderMid}"/>
+        <Setter Property="BorderWidth"      Value="1.5"/>
+        <Setter Property="CornerRadius"     Value="12"/>
+        <Setter Property="FontSize"         Value="22"/>
+        <Setter Property="HeightRequest"    Value="64"/>
+        <Setter Property="WidthRequest"     Value="64"/>
+        <Setter Property="Padding"          Value="0"/>
+    </Style>
+    <Style TargetType="Button" x:Key="BtnCmdStop">
+        <Setter Property="BackgroundColor"  Value="{StaticResource AccentRed}"/>
+        <Setter Property="TextColor"        Value="White"/>
+        <Setter Property="CornerRadius"     Value="12"/>
+        <Setter Property="FontSize"         Value="16"/>
+        <Setter Property="FontAttributes"   Value="Bold"/>
+        <Setter Property="HeightRequest"    Value="64"/>
+        <Setter Property="WidthRequest"     Value="64"/>
+        <Setter Property="Padding"          Value="0"/>
+    </Style>
+
+    <!-- ══ SLIDER STYLES ══ -->
+    <Style TargetType="Slider" x:Key="SliderBlue">
+        <Setter Property="MinimumTrackColor" Value="{StaticResource AccentBlue}"/>
+        <Setter Property="MaximumTrackColor" Value="{StaticResource BorderMid}"/>
+        <Setter Property="ThumbColor"        Value="{StaticResource AccentBlue}"/>
+    </Style>
+    <Style TargetType="Slider" x:Key="SliderOrange">
+        <Setter Property="MinimumTrackColor" Value="{StaticResource AccentOrange}"/>
+        <Setter Property="MaximumTrackColor" Value="{StaticResource BorderMid}"/>
+        <Setter Property="ThumbColor"        Value="{StaticResource AccentOrange}"/>
+    </Style>
+    <Style TargetType="Slider" x:Key="SliderCyan">
+        <Setter Property="MinimumTrackColor" Value="{StaticResource AccentCyan}"/>
+        <Setter Property="MaximumTrackColor" Value="{StaticResource BorderMid}"/>
+        <Setter Property="ThumbColor"        Value="{StaticResource AccentCyan}"/>
+    </Style>
+
+
+    <!-- ══ NAV ITEM STYLE ══ -->
+    <Style TargetType="Border" x:Key="NavItem">
+        <Setter Property="BackgroundColor"  Value="Transparent"/>
+        <Setter Property="StrokeThickness"  Value="0"/>
+        <Setter Property="Padding"          Value="10,10"/>
+        <Setter Property="Margin"           Value="0,1"/>
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="8"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
