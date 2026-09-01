@@ -9,8 +9,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -21,18 +25,28 @@ import org.osmdroid.views.overlay.Marker
 fun GpsScreen() {
     val fix by MqttManager.gps.collectAsState()
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Nome del file per le preferenze condivise
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
     val sharedPreferences = remember {
         context.getSharedPreferences("LagmaGpsPrefs", Context.MODE_PRIVATE)
     }
 
-    // 1. Recupera l'ultima posizione salvata (se esiste), altrimenti di default usa Milano (45.4642, 9.1900)
-    val savedLat = sharedPreferences.getFloat("LAST_LAT", 45.4642f).toDouble()
-    val savedLon = sharedPreferences.getFloat("LAST_LON", 9.1900f).toDouble()
+    // Inizializza la configurazione di Osmdroid (User Agent obbligatorio per evitare blocchi nel caricamento tiles)
+    LaunchedEffect(Unit) {
+        runCatching {
+            Configuration.getInstance().load(context, sharedPreferences)
+            Configuration.getInstance().userAgentValue = context.packageName
+        }.onFailure { e ->
+            errorMessage = "Errore Init OSM: ${e.localizedMessage}"
+        }
+    }
 
-    // Flag per centrare la mappa solo la prima volta che si apre la schermata
-    var isInitialCenterDone = remember { false }
+    val savedLat = sharedPreferences.getFloat("LAST_LAT", 45.4000f).toDouble()
+    val savedLon = sharedPreferences.getFloat("LAST_LON", 9.6711f).toDouble()
+
+    var isInitialCenterDone by remember { mutableStateOf(false) }
 
     val mapView = remember {
         MapView(context).apply {
@@ -48,43 +62,72 @@ fun GpsScreen() {
             })
             setMultiTouchControls(true)
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-            controller.setZoom(15.0)
-            // Centra subito sulla posizione salvata precedentemente
+            controller.setZoom(17.0)
             controller.setCenter(GeoPoint(savedLat, savedLon))
+
+            val initialMarker = Marker(this).apply {
+                position = GeoPoint(savedLat, savedLon)
+                title = "LagmaBills (Ultima nota)"
+            }
+            overlays.add(initialMarker)
         }
     }
 
-    // 2. Ogni volta che arriva un nuovo fix valido, aggiorna la mappa E salva i dati nella memoria persistente
+    // Gestione del Lifecycle di Osmdroid per evitare mem-leak o blocchi
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> mapView.onResume()
+                Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            mapView.onDetach()
+        }
+    }
+
+    // Aggiornamento posizione GPS live
     LaunchedEffect(fix) {
-        fix?.let {
-            val point = GeoPoint(it.lat, it.lon)
+        val currentFix = fix
+        if (currentFix != null && currentFix.lat != 0.0 && currentFix.lon != 0.0) {
+            runCatching {
+                val point = GeoPoint(currentFix.lat, currentFix.lon)
 
-            // Salva in modo permanente su SharedPreferences
-            sharedPreferences.edit().apply {
-                putFloat("LAST_LAT", it.lat.toFloat())
-                putFloat("LAST_LON", it.lon.toFloat())
-                apply()
-            }
+                // Salva le coordinate correnti
+                sharedPreferences.edit().apply {
+                    putFloat("LAST_LAT", currentFix.lat.toFloat())
+                    putFloat("LAST_LON", currentFix.lon.toFloat())
+                    apply()
+                }
 
-            mapView.overlays.clear()
-            val marker = Marker(mapView).apply {
-                position = point
-                title = "LagmaBills"
-            }
-            mapView.overlays.add(marker)
+                mapView.overlays.clear()
+                val marker = Marker(mapView).apply {
+                    position = point
+                    title = "LagmaBills (Live)"
+                }
+                mapView.overlays.add(marker)
 
-            // Centra la mappa automaticamente la prima volta che arriva il fix o se desideri seguirlo
-            if (!isInitialCenterDone) {
-                mapView.controller.animateTo(point)
-                isInitialCenterDone = true
+                if (!isInitialCenterDone) {
+                    mapView.controller.animateTo(point)
+                    isInitialCenterDone = true
+                } else {
+                    // Mantiene la visuale centrata mentre il modulo si sposta
+                    mapView.controller.setCenter(point)
+                }
+                mapView.invalidate()
+            }.onFailure { e ->
+                errorMessage = "Errore update mappa: ${e.localizedMessage}"
             }
-            mapView.invalidate()
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
 
+        // Banner delle informazioni / Errore in basso
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -92,14 +135,19 @@ fun GpsScreen() {
                 .background(Color(0xCC10141C))
                 .padding(12.dp)
         ) {
-            if (fix == null) {
-                // Mostra un avviso se non c'è il fix live, ricordando l'ultima posizione memorizzata
-                Text("Ultima posizione nota salvata", color = Color.White)
-            } else {
-                Column {
-                    Text("Lat: ${fix!!.lat}  Lon: ${fix!!.lon}", color = Color.White)
+            Column {
+                if (errorMessage != null) {
+                    Text("⚠️ ${errorMessage}", color = Color.Red)
+                }
+
+                val currentFix = fix
+                if (currentFix == null || (currentFix.lat == 0.0 && currentFix.lon == 0.0)) {
+                    Text("In attesa del segnale GPS... (Ultima posizione salvata)", color = Color.Yellow)
+                    Text("Lat: $savedLat  Lon: $savedLon", color = Color.Gray)
+                } else {
+                    Text("Lat: ${currentFix.lat}  Lon: ${currentFix.lon}", color = Color.White)
                     Text(
-                        "Alt: ${fix!!.alt}m  Vel: ${"%.1f".format(fix!!.speed_kn * 1.852)} km/h  Sat: ${fix!!.satellites}",
+                        "Alt: ${currentFix.alt}m  Vel: ${"%.1f".format(currentFix.speed_kn * 1.852)} km/h  Sat: ${currentFix.satellites}",
                         color = Color.White
                     )
                 }

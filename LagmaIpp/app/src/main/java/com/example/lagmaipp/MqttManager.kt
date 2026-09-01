@@ -29,8 +29,6 @@ object MqttManager {
     val connected: StateFlow<Boolean> = _connected
 
     fun connect() {
-        // Registriamo il listener globale dei messaggi *prima* di connettere,
-        // così siamo sicuri di non perdere nessun pacchetto in arrivo.
         client.publishes(com.hivemq.client.mqtt.MqttGlobalPublishFilter.SUBSCRIBED) { pub ->
             val topic = pub.topic.toString()
             val payload = String(pub.payloadAsBytes, Charsets.UTF_8)
@@ -51,7 +49,6 @@ object MqttManager {
             val success = throwable == null
             _connected.value = success
             if (success) {
-                // Sottoscrizione ai topic dopo la connessione riuscita
                 client.subscribeWith().topicFilter("robot/pi/stats").send()
                 client.subscribeWith().topicFilter("robot/gps/posizione").send()
             }
@@ -76,9 +73,9 @@ data class PiStats(
 
 @Serializable
 data class GpsFix(
-    val lat: Double,
-    val lon: Double,
-    val alt: Double,
-    val speed_kn: Double,
-    val satellites: Int
+    val lat: Double = 0.0,
+    val lon: Double = 0.0,
+    val alt: Double = 0.0,
+    val speed_kn: Float = 0f,
+    val satellites: Int = 0
 )

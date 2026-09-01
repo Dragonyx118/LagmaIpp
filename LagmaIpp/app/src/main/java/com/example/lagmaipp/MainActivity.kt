@@ -11,10 +11,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CompassCalibration
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -118,7 +114,7 @@ fun SplashScreen() {
 
 enum class AppDestinations(
     val label: String,
-    val iconRes: Int, // Usiamo un Int per l'ID della risorsa drawable
+    val iconRes: Int,
 ) {
     AI("A.I.", android.R.drawable.ic_menu_compass),
     CONTROLLER("Controller", R.drawable.ic_lagmabills),
@@ -149,7 +145,7 @@ fun LagmaIppApp() {
                                 Icon(
                                     painter = painterResource(destination.iconRes),
                                     contentDescription = destination.label,
-                                    modifier = Modifier.size(iconSize) // ← Usa la variabile iconSize calcolata
+                                    modifier = Modifier.size(iconSize)
                                 )
                             },
                             label = { Text(destination.label) },
@@ -189,22 +185,20 @@ fun AiScreen() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Immagine di sfondo posizionata sotto il contenuto
         androidx.compose.foundation.Image(
-            painter = painterResource(id = R.drawable.jarvis), // Sostituisci con il nome della tua immagine in drawable
+            painter = painterResource(id = R.drawable.jarvis),
             contentDescription = "Sfondo AI",
             modifier = Modifier.fillMaxSize(),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop // Riempie lo schermo mantenendo le proporzioni
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
 
-        // Contenuto sopra l'immagine
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "A.I. — in arrivo (Panelli Gay)",
-                color = Color.White, // Modifica il colore se serve contrasto con l'immagine
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
