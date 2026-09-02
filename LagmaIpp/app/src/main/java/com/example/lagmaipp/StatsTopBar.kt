@@ -61,7 +61,7 @@ fun StatsTopBar() {
                 .background(Color(0x22FFFFFF), RoundedCornerShape(8.dp))
                 .padding(8.dp)
         ) {
-            Text("FREE", color = Color.White.copy(alpha = 0.8f), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text("MEMORY LEFT", color = Color.White.copy(alpha = 0.8f), fontSize = 10.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
             Text("${stats.ram_free_mb.toInt()}MB", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
         }

@@ -20,13 +20,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun ControllerScreen() {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var connected by remember { mutableStateOf(isGamepadConnected()) }
-    var showDialog by remember { mutableStateOf(false) }
+
+    // Stato dell'attivazione di LagmaBills
+    var isLagmaBillsActive by remember { mutableStateOf(false) }
+
+    var showStartDialog by remember { mutableStateOf(false) }
+    var showStopDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -62,7 +69,7 @@ fun ControllerScreen() {
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (connected) "🎮 Xbox controller connesso" else "Nessun controller Xbox rilevato (Fanculo Sony)",
+                text = if (connected) "🎮 Xbox controller connesso" else "Nessun controller Xbox rilevato (Sony merda)",
                 fontSize = 14.sp,
                 color = Color.DarkGray
             )
@@ -75,42 +82,98 @@ fun ControllerScreen() {
             }
         }
 
-        Box(
+        Column(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            // Bottone Attiva LagmaBills
             Button(
-                onClick = { showDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5)),
+                onClick = { showStartDialog = true },
+                enabled = !isLagmaBillsActive,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1E88E5),        // Blu standard (Attivo/Premibile)
+                    disabledContainerColor = Color(0xFF0D47A1), // Blu scuro (Già attivato/Disabilitato)
+                    disabledContentColor = Color.LightGray
+                ),
                 modifier = Modifier
                     .width(220.dp)
                     .height(56.dp)
             ) {
-                Text("Activate LagmaBills", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(
+                    text = if (isLagmaBillsActive) "LagmaBills Attivo" else "Activate LagmaBills",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Bottone Arresta LagmaBills
+            Button(
+                onClick = { showStopDialog = true },
+                enabled = isLagmaBillsActive,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF616161),        // Grigio (Premibile)
+                    disabledContainerColor = Color(0xFFE0E0E0), // Grigio chiaro (Disabilitato)
+                    disabledContentColor = Color.DarkGray
+                ),
+                modifier = Modifier
+                    .width(220.dp)
+                    .height(56.dp)
+            ) {
+                Text(
+                    text = "Arresta LagmaBills",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
 
-        if (showDialog) {
+        if (showStartDialog) {
             AlertDialog(
-                onDismissRequest = { showDialog = false },
+                onDismissRequest = { showStartDialog = false },
                 title = { Text("Attivazione LagmaBills") },
                 text = { Text("Are u sure?") },
                 confirmButton = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Button(
                             onClick = {
-                                showDialog = false
+                                showStartDialog = false
+                                isLagmaBillsActive = true
+                                scope.launch { UdpCommander.send("START") }
                             },
                             shape = CircleShape,
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
-                            modifier = Modifier
-                                .size(256.dp)
+                            modifier = Modifier.size(256.dp)
                         ) {
                             Text("Pretty sure!", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 32.sp)
                         }
+                    }
+                }
+            )
+        }
+
+        if (showStopDialog) {
+            AlertDialog(
+                onDismissRequest = { showStopDialog = false },
+                title = { Text("Shutdown LagmaBills") },
+                text = { Text("Fermare tutti i processi?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showStopDialog = false
+                            isLagmaBillsActive = false
+                            scope.launch { UdpCommander.send("STOP") }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935))
+                    ) {
+                        Text("STOP IT", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showStopDialog = false }) {
+                        Text("Nah")
                     }
                 }
             )

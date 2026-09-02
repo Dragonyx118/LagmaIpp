@@ -53,25 +53,45 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LagmaIppTheme {
-                var showSplash by remember { mutableStateOf(true) }
-
-                LaunchedEffect(Unit) {
-                    delay(2500.milliseconds)
-                    showSplash = false
-                }
-
-                if (showSplash) {
-                    SplashScreen()
-                } else {
-                    LagmaIppApp()
-                }
+                MainAppNavigation()
             }
         }
     }
 }
 
+enum class AppState {
+    SPLASH,
+    TAILSCALE_CHECK,
+    MAIN_APP
+}
+
 @Composable
-fun SplashScreen() {
+fun MainAppNavigation() {
+    var currentState by remember { mutableStateOf(AppState.SPLASH) }
+
+    when (currentState) {
+        AppState.SPLASH -> {
+            SplashScreen(
+                onSplashFinished = {
+                    currentState = AppState.TAILSCALE_CHECK
+                }
+            )
+        }
+        AppState.TAILSCALE_CHECK -> {
+            TailscaleCheckScreen(
+                onCheckPassed = {
+                    currentState = AppState.MAIN_APP
+                }
+            )
+        }
+        AppState.MAIN_APP -> {
+            LagmaIppApp()
+        }
+    }
+}
+
+@Composable
+fun SplashScreen(onSplashFinished: () -> Unit) {
     val offsetX = remember { Animatable(300f) }
 
     LaunchedEffect(Unit) {
@@ -79,6 +99,8 @@ fun SplashScreen() {
             targetValue = 0f,
             animationSpec = tween(durationMillis = 1200)
         )
+        delay(1300.milliseconds)
+        onSplashFinished()
     }
 
     Box(
