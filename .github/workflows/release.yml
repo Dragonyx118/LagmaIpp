@@ -4,21 +4,21 @@ on:
   push:
     tags:
       - 'v*' # Si attiva automaticamente ogni volta che fai il push di un tag che inizia con "v" (es. v1.1, v1.2)
+  workflow_dispatch: # Permette anche di avviarlo manualmente da GitHub Actions se ti serve
 
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Necessario per permettere ad GitHub Actions di creare la release e caricare file
+      contents: write # Necessario per permettere a GitHub Actions di creare la release e caricare file
 
     steps:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
       - name: Trova e rilascia APK
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
-            path/al/tuo/file/app-release.apk 
-            # Sostituisci il percorso sopra con il percorso esatto in cui si trova l'APK nel tuo repo (es. Apks/nomefile.apk)
+            Apks/LagmaIpp.apk
           generate_release_notes: true
