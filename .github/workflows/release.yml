@@ -1,24 +1,109 @@
-name: Build and Release APK
+name: Auto Release APK
 
 on:
   push:
-    tags:
-      - 'v*' # Si attiva automaticamente ogni volta che fai il push di un tag che inizia con "v" (es. v1.1, v1.2)
-  workflow_dispatch: # Permette anche di avviarlo manualmente da GitHub Actions se ti serve
+    branches:
+      - main
+      - master
+    paths:
+      - 'Apks/*.apk'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  release:
+  create-release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Necessario per permettere a GitHub Actions di creare la release e caricare file
 
     steps:
       - name: Checkout del codice
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Trova e rilascia APK
+      - name: Estrai versione e versionCode da build.gradle.kts
+        id: parse_gradle
+        run: |
+          GRADLE_FILE="LagmaIpp/app/build.gradle.kts"
+
+          VERSION_NAME=$(grep -E '^\s*versionName\s*=' "$GRADLE_FILE" | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+          VERSION_CODE=$(grep -E '^\s*versionCode\s*=' "$GRADLE_FILE" | head -n 1 | sed -E 's/.*=\s*([0-9]+).*/\1/')
+
+          if [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ]; then
+            echo "ERRORE: impossibile leggere versionName/versionCode da $GRADLE_FILE"
+            exit 1
+          fi
+
+          echo "versionName=$VERSION_NAME  versionCode=$VERSION_CODE"
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "tag_name=v$VERSION_NAME" >> $GITHUB_OUTPUT
+
+      - name: Trova l'APK
+        id: parse_apk
+        run: |
+          VERSION_NAME="${{ steps.parse_gradle.outputs.version_name }}"
+
+          # Prima prova un APK con la versione nel nome, altrimenti prende il più recente
+          APK_FILE=$(find Apks/ -maxdepth 1 -iname "*v${VERSION_NAME}*.apk" | head -n 1)
+          if [ -z "$APK_FILE" ]; then
+            APK_FILE=$(ls -t Apks/*.apk 2>/dev/null | head -n 1)
+          fi
+
+          if [ -z "$APK_FILE" ]; then
+            echo "ERRORE: nessun APK trovato nella cartella Apks/"
+            exit 1
+          fi
+
+          FILE_SIZE=$(stat -c%s "$APK_FILE")
+          if [ "$FILE_SIZE" -lt 1048576 ]; then
+            echo "ERRORE: l'APK ($APK_FILE) pesa meno di 1MB, probabilmente corrotto"
+            exit 1
+          fi
+
+          echo "APK selezionato: $APK_FILE"
+          echo "apk_path=$APK_FILE" >> $GITHUB_OUTPUT
+
+      - name: Verifica esistenza Tag Git
+        id: check_tag
+        run: |
+          TAG_NAME="${{ steps.parse_gradle.outputs.tag_name }}"
+
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1 || git ls-remote --tags origin "$TAG_NAME" | grep -q "$TAG_NAME"; then
+            echo "Il tag $TAG_NAME esiste già: versione non cambiata, nessuna release creata."
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepara le Note di Rilascio
+        if: steps.check_tag.outputs.exists == 'false'
+        id: release_body
+        run: |
+          BODY=$(cat <<EOF
+          versionCode=${{ steps.parse_gradle.outputs.version_code }}
+
+          ## Note di rilascio
+          - Nuovo aggiornamento di LagmaIpp, versione ${{ steps.parse_gradle.outputs.version_name }}.
+          EOF
+          )
+
+          EOF_MARKER=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "body<<$EOF_MARKER" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "$EOF_MARKER" >> $GITHUB_OUTPUT
+
+      - name: Crea la Release su GitHub
+        if: steps.check_tag.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            Apks/LagmaIpp.apk
-          generate_release_notes: true
+          tag_name: ${{ steps.parse_gradle.outputs.tag_name }}
+          name: "Release ${{ steps.parse_gradle.outputs.tag_name }}"
+          body: ${{ steps.release_body.outputs.body }}
+          files: ${{ steps.parse_apk.outputs.apk_path }}
+          target_commitish: ${{ github.sha }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
