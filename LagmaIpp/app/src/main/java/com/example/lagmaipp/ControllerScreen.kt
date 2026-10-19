@@ -34,6 +34,7 @@ fun ControllerScreen() {
 
     var showStartDialog by remember { mutableStateOf(false) }
     var showStopDialog by remember { mutableStateOf(false) }
+    var showPairDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -92,8 +93,8 @@ fun ControllerScreen() {
                 onClick = { showStartDialog = true },
                 enabled = !isLagmaBillsActive,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF1E88E5),        // Blu standard (Attivo/Premibile)
-                    disabledContainerColor = Color(0xFF0D47A1), // Blu scuro (Già attivato/Disabilitato)
+                    containerColor = Color(0xFF1E88E5),
+                    disabledContainerColor = Color(0xFF0D47A1),
                     disabledContentColor = Color.LightGray
                 ),
                 modifier = Modifier
@@ -114,8 +115,8 @@ fun ControllerScreen() {
                 onClick = { showStopDialog = true },
                 enabled = isLagmaBillsActive,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF616161),        // Grigio (Premibile)
-                    disabledContainerColor = Color(0xFFE0E0E0), // Grigio chiaro (Disabilitato)
+                    containerColor = Color(0xFF616161),
+                    disabledContainerColor = Color(0xFFE0E0E0),
                     disabledContentColor = Color.DarkGray
                 ),
                 modifier = Modifier
@@ -126,6 +127,30 @@ fun ControllerScreen() {
                     text = "Arresta LagmaBills",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Bottone Sincronizza controller (sempre premibile)
+            Button(
+                onClick = { showPairDialog = true },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF43A047)),
+                modifier = Modifier
+                    .width(220.dp)
+                    .height(56.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Bluetooth,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Sincronizza controller",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
         }
@@ -174,6 +199,37 @@ fun ControllerScreen() {
                 dismissButton = {
                     Button(onClick = { showStopDialog = false }) {
                         Text("Nah")
+                    }
+                }
+            )
+        }
+
+        if (showPairDialog) {
+            AlertDialog(
+                onDismissRequest = { showPairDialog = false },
+                title = { Text("Sincronizza controller") },
+                text = {
+                    Text(
+                        "1. Spegni il controller\n" +
+                                "2. Tieni premuto il tasto sync (sopra, vicino alla porta USB) per 3 secondi, finché il LED Xbox lampeggia velocemente\n" +
+                                "3. Premi Avvia entro pochi secondi\n\n" +
+                                "LagmaBills emetterà un beep quando il controller è connesso."
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showPairDialog = false
+                            scope.launch { UdpCommander.send("PAIR") }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF43A047))
+                    ) {
+                        Text("Avvia", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showPairDialog = false }) {
+                        Text("Annulla")
                     }
                 }
             )

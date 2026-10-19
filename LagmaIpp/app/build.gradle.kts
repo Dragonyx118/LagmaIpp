@@ -14,8 +14,8 @@ android {
         applicationId = "com.example.lagmaipp"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
-        versionName = "2.0"
+        versionCode = 200
+        versionName = "3.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -71,3 +71,55 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(libs.kotlinx.serialization.json)
 }
+
+val appVersionName = android.defaultConfig.versionName ?: "1.0"
+val apkOutputDir = layout.buildDirectory.dir("outputs/apk")
+
+val copyApksTask = tasks.register("copyGeneratedApks") {
+    val version = appVersionName
+    val buildDirFile = apkOutputDir
+
+    doLast {
+        val outputFolder = buildDirFile.get().asFile
+
+        // Cartelle dove copiare gli APK: cambia qui i percorsi
+        val cartelleDestinazione = listOf(
+            File("C:\\Users\\gianb\\Desktop\\Projects\\LagmaBills\\LagmaIpp\\repo\\LagmaIpp\\Apks")
+        )
+
+        cartelleDestinazione.forEach { cartella ->
+            if (!cartella.exists()) {
+                cartella.mkdirs()
+            }
+        }
+
+        if (outputFolder.exists()) {
+            outputFolder.walkTopDown().forEach { file ->
+                // Solo APK veri (> 2 MB), esclude l'APK di androidTest
+                if (file.extension == "apk" &&
+                    file.length() > 1 * 1024 * 1024 &&
+                    !file.name.contains("androidTest")
+                ) {
+                    val buildType = file.parentFile.name // debug / release
+                    val nuovoNomeApk = "LagmaIpp-$buildType-v$version.apk"
+
+                    cartelleDestinazione.forEach { cartella ->
+                        val fileDestinazione = File(cartella, nuovoNomeApk)
+                        file.copyTo(fileDestinazione, overwrite = true)
+                        println("APK copiato in: ${fileDestinazione.absolutePath} (${file.length() / 1024 / 1024} MB)")
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.matching {
+    it.name.startsWith("assemble") || it.name == "packageDebug" || it.name == "packageRelease"
+}.configureEach {
+    finalizedBy(copyApksTask)
+}
+
+// Usati da eventuali workflow GitHub
+tasks.register("printVersionName") { doLast { println(android.defaultConfig.versionName) } }
+tasks.register("printVersionCode") { doLast { println(android.defaultConfig.versionCode) } }
