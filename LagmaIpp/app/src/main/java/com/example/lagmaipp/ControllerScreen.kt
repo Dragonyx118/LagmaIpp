@@ -2,6 +2,7 @@ package com.example.lagmaipp
 
 import android.content.Intent
 import android.provider.Settings
+import android.util.Log
 import android.view.InputDevice
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,18 +24,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
+private const val TAG = "ControllerScreenDebug"
+
 @Composable
 fun ControllerScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var connected by remember { mutableStateOf(isGamepadConnected()) }
 
-    // Stato dell'attivazione di LagmaBills
     var isLagmaBillsActive by remember { mutableStateOf(false) }
 
     var showStartDialog by remember { mutableStateOf(false) }
     var showStopDialog by remember { mutableStateOf(false) }
     var showPairDialog by remember { mutableStateOf(false) }
+    var showGuideDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -83,12 +86,19 @@ fun ControllerScreen() {
             }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { showGuideDialog = true },
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
+        ) {
+            Text("Comandi controller", fontSize = 12.sp)
+        }
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Bottone Attiva LagmaBills
             Button(
                 onClick = { showStartDialog = true },
                 enabled = !isLagmaBillsActive,
@@ -110,7 +120,6 @@ fun ControllerScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Bottone Arresta LagmaBills
             Button(
                 onClick = { showStopDialog = true },
                 enabled = isLagmaBillsActive,
@@ -132,9 +141,11 @@ fun ControllerScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Bottone Sincronizza controller (sempre premibile)
             Button(
-                onClick = { showPairDialog = true },
+                onClick = {
+                    Log.d(TAG, "Cliccato pulsante 'Sincronizza controller' -> apro dialog")
+                    showPairDialog = true
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF43A047)),
                 modifier = Modifier
                     .width(220.dp)
@@ -164,9 +175,13 @@ fun ControllerScreen() {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Button(
                             onClick = {
+                                Log.d(TAG, "Confermato START nel dialog")
                                 showStartDialog = false
                                 isLagmaBillsActive = true
-                                scope.launch { UdpCommander.send("START") }
+                                scope.launch {
+                                    Log.d(TAG, "Avvio coroutine per invio START")
+                                    UdpCommander.send("START")
+                                }
                             },
                             shape = CircleShape,
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
@@ -187,9 +202,13 @@ fun ControllerScreen() {
                 confirmButton = {
                     Button(
                         onClick = {
+                            Log.d(TAG, "Confermato STOP nel dialog")
                             showStopDialog = false
                             isLagmaBillsActive = false
-                            scope.launch { UdpCommander.send("STOP") }
+                            scope.launch {
+                                Log.d(TAG, "Avvio coroutine per invio STOP")
+                                UdpCommander.send("STOP")
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935))
                     ) {
@@ -197,7 +216,10 @@ fun ControllerScreen() {
                     }
                 },
                 dismissButton = {
-                    Button(onClick = { showStopDialog = false }) {
+                    Button(onClick = {
+                        Log.d(TAG, "Annullato STOP nel dialog")
+                        showStopDialog = false
+                    }) {
                         Text("Nah")
                     }
                 }
@@ -206,7 +228,10 @@ fun ControllerScreen() {
 
         if (showPairDialog) {
             AlertDialog(
-                onDismissRequest = { showPairDialog = false },
+                onDismissRequest = {
+                    Log.d(TAG, "Dialog PAIR chiuso (dismiss)")
+                    showPairDialog = false
+                },
                 title = { Text("Sincronizza controller") },
                 text = {
                     Text(
@@ -219,8 +244,12 @@ fun ControllerScreen() {
                 confirmButton = {
                     Button(
                         onClick = {
+                            Log.d(TAG, "Premuto 'Avvia' nel dialog PAIR")
                             showPairDialog = false
-                            scope.launch { UdpCommander.send("PAIR") }
+                            scope.launch {
+                                Log.d(TAG, "Avvio coroutine per invio PAIR")
+                                UdpCommander.send("PAIR")
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF43A047))
                     ) {
@@ -228,11 +257,18 @@ fun ControllerScreen() {
                     }
                 },
                 dismissButton = {
-                    Button(onClick = { showPairDialog = false }) {
+                    Button(onClick = {
+                        Log.d(TAG, "Premuto 'Annulla' nel dialog PAIR")
+                        showPairDialog = false
+                    }) {
                         Text("Annulla")
                     }
                 }
             )
+        }
+
+        if (showGuideDialog) {
+            ControllerGuideDialog(onDismiss = { showGuideDialog = false })
         }
     }
 }

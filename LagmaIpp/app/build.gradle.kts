@@ -14,8 +14,8 @@ android {
         applicationId = "com.example.lagmaipp"
         minSdk = 24
         targetSdk = 37
-        versionCode = 200
-        versionName = "3.1.0"
+        versionCode = 320
+        versionName = "3.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
